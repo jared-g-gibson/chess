@@ -56,6 +56,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if(type == PieceType.BISHOP)
             return calculateBishopMoves(board, myPosition);
+        else if(type == PieceType.KING)
+            return calculateKingMoves(board, myPosition);
         return new HashSet<ChessMove>();
         //throw new RuntimeException("Not implemented");
     }
@@ -149,6 +151,65 @@ public class ChessPiece {
             col--;
         }
         //ChessBoard.getPiece();
+        return moves;
+    }
+
+    /*
+     * Function that calculates all possible positions a King can move from current position
+     * */
+    public HashSet<ChessMove> calculateKingMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // Check if King can move up
+        if(row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), null));
+        else if(row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col), null));
+
+        // Check if King can move down
+        if(row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+        else if(row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+
+        // Check if King can move left
+        if(col - 1 > 0 && board.getPiece(new ChessPosition(row, col-1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), null));
+        else if(col - 1 > 0 && board.getPiece(new ChessPosition(row, col-1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col-1), null));
+
+        // Check if King can move right
+        if(col + 1 < 9 && board.getPiece(new ChessPosition(row, col+1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+        else if(col + 1 < 9 && board.getPiece(new ChessPosition(row, col+1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+
+        // Check if King can move up and to the right
+        if(col + 1 < 9 && row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col+1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col+1), null));
+        else if(col + 1 < 9 && row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col+1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col+1), null));
+
+        // Check if King can move up and to the left
+        if(col - 1 > 0 && row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col-1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), null));
+        else if(col - 1 > 0 && row + 1 < 9 && board.getPiece(new ChessPosition(row+1, col-1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col-1), null));
+
+        // Check if King can move down and to the right
+        if(col + 1 < 9 && row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col+1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col+1), null));
+        else if(col + 1 < 9 && row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col+1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col+1), null));
+
+        // Check if King can move down and to the left
+        if(col - 1 > 0 && row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col-1)) == null)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), null));
+        else if(col - 1 > 0 && row - 1 > 0 && board.getPiece(new ChessPosition(row-1, col-1)).pieceColor != pieceColor)
+            moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), null));
+
         return moves;
     }
 
