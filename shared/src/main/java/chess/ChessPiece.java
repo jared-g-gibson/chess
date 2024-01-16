@@ -58,6 +58,8 @@ public class ChessPiece {
             return calculateBishopMoves(board, myPosition);
         else if(type == PieceType.KING)
             return calculateKingMoves(board, myPosition);
+        else if(type == PieceType.KNIGHT)
+            return calculateKnightMoves(board, myPosition);
         return new HashSet<ChessMove>();
         //throw new RuntimeException("Not implemented");
     }
@@ -211,6 +213,59 @@ public class ChessPiece {
             moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col-1), null));
 
         return moves;
+    }
+
+    /*
+    * Function that returns possible moves for a knight
+    * */
+
+    public HashSet<ChessMove> calculateKnightMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // Up and left combos
+        ChessMove move = knightHelper(board, myPosition, row + 1, col - 2);
+        if(move != null)
+            moves.add(move);
+        move = knightHelper(board, myPosition, row + 2, col - 1);
+        if(move != null)
+            moves.add(move);
+
+        // Up and right combos
+        move = knightHelper(board, myPosition, row + 1, col + 2);
+        if(move != null)
+            moves.add(move);
+        move = knightHelper(board, myPosition, row + 2, col + 1);
+        if(move != null)
+            moves.add(move);
+
+        // Down and left combos
+        move = knightHelper(board, myPosition, row - 1, col - 2);
+        if(move != null)
+            moves.add(move);
+        move = knightHelper(board, myPosition, row - 2, col - 1);
+        if(move != null)
+            moves.add(move);
+
+        // Down and right combos
+        move = knightHelper(board, myPosition, row - 1, col + 2);
+        if(move != null)
+            moves.add(move);
+        move = knightHelper(board, myPosition, row - 2, col + 1);
+        if(move != null)
+            moves.add(move);
+
+        return moves;
+    }
+
+    public ChessMove knightHelper(ChessBoard board, ChessPosition myPosition, int row, int col) {
+        if(row > 0 && row < 9 && col > 0 && col < 9 && board.getPiece(new ChessPosition(row, col)) == null)
+            return new ChessMove(myPosition, new ChessPosition(row, col), null);
+        else if(row > 0 && row < 9 && col > 0 && col < 9 && board.getPiece(new ChessPosition(row, col)).pieceColor != pieceColor)
+            return new ChessMove(myPosition, new ChessPosition(row, col), null);
+        else
+            return null;
     }
 
     @Override
