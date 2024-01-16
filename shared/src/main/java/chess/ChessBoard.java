@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private static ChessPiece[][] board;
+    private ChessPiece[][] board;
 
     public ChessBoard() {
         board = new ChessPiece[8][8];
@@ -45,12 +45,6 @@ public class ChessBoard {
      */
     public void resetBoard() {
         board = new ChessPiece[8][8];
-
-        /*for(int x = 0; x < 8; x++) {
-            for(int y = 0; y < 8; y++) {
-                board[x][y] = null;
-            }
-        }*/
 
         /*
         *  White Pieces
@@ -109,5 +103,27 @@ public class ChessBoard {
 
         //throw new RuntimeException("Not implemented");
     }
+    @Override
+    public String toString() {
+        String s = "\n";
+        for(int i = 0; i < 8; i++) {
+            for(int x = 0; x < 8; x++) {
+                s = s + "Row: " + i + " Column: " + x + ": " + board[i][x] + "\n" ;
+            }
+        }
+        return s;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
+    }
 }

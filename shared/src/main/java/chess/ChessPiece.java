@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -58,15 +56,15 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if(type == PieceType.BISHOP)
             return calculateBishopMoves(board, myPosition);
-        return new ArrayList<ChessMove>();
+        return new HashSet<ChessMove>();
         //throw new RuntimeException("Not implemented");
     }
 
     /*
     * Function that calculates all possible positions a Bishop can move
     * */
-    public ArrayList<ChessMove> calculateBishopMoves(ChessBoard board, ChessPosition myPosition) {
-        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+    public HashSet<ChessMove> calculateBishopMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
         // Up and to the right
         int row = myPosition.getRow();
         int col = myPosition.getColumn();

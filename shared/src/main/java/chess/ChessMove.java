@@ -8,7 +8,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessMove {
+public class ChessMove{
 
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
@@ -59,5 +59,14 @@ public class ChessMove {
     @Override
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessMove{" +
+                "startPosition=" + startPosition +
+                ", endPosition=" + endPosition +
+                ", promotionPiece=" + promotionPiece +
+                '}';
     }
 }
