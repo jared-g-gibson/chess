@@ -62,6 +62,8 @@ public class ChessPiece {
             return calculateKnightMoves(board, myPosition);
         else if(type == PieceType.PAWN)
             return calculatePawnMoves(board, myPosition);
+        else if(type == PieceType.QUEEN)
+            return calculateQueenMoves(board, myPosition);
         return new HashSet<ChessMove>();
         //throw new RuntimeException("Not implemented");
     }
@@ -270,6 +272,9 @@ public class ChessPiece {
             return null;
     }
 
+    /*
+    * Function that calculates all possible pawn moves and promotions
+    *  */
     public HashSet<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition) {
         HashSet<ChessMove> moves = new HashSet<>();
         int row = myPosition.getRow();
@@ -362,6 +367,151 @@ public class ChessPiece {
                 else
                     moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), null));
             }
+        }
+        return moves;
+    }
+
+    public HashSet<ChessMove> calculateQueenMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        int row = myPosition.getRow() + 1;
+        int col = myPosition.getColumn();
+        // Adds moves that queen can make that go up
+        while(row < 9) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+            // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+            // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            row++;
+        }
+        // Adds moves that queen can make that go up and to the right
+        row = myPosition.getRow() + 1;
+        col = myPosition.getColumn() + 1;
+        while(row < 9 && col < 9) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            row++;
+            col++;
+        }
+        // Adds moves that queen can make that go right
+        col = myPosition.getColumn() + 1;
+        row = myPosition.getRow();
+        while(col < 9) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            col++;
+        }
+        // Adds moves that queen can make that go down and right
+        row = myPosition.getRow() - 1;
+        col = myPosition.getColumn() + 1;
+        while(col < 9 && row > 0) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            col++;
+            row--;
+        }
+        // Adds moves that queen can make that go down
+        row = myPosition.getRow() - 1;
+        col = myPosition.getColumn();
+        while(row > 0) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            row--;
+        }
+        // Adds moves that queen can make that go left and down
+        row = myPosition.getRow() - 1;
+        col = myPosition.getColumn() - 1;
+        while(row > 0 && col > 0) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            col--;
+            row--;
+        }
+        // Adds moves that queen can make that go left
+        row = myPosition.getRow();
+        col = myPosition.getColumn() - 1;
+        while(col > 0) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            col--;
+        }
+        // Adds moves that queen can make that go left and up
+        row = myPosition.getRow() + 1;
+        col = myPosition.getColumn() - 1;
+        while(col > 0 && row < 9) {
+            // Checks if there is no piece there
+            if(board.getPiece(new ChessPosition(row, col)) == null)
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                // Checks to see if piece of same color is blocking it
+            else if(board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor)
+                break;
+                // Opposing piece can get captured
+            else {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+                break;
+            }
+            col--;
+            row++;
         }
         return moves;
     }
