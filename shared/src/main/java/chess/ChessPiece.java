@@ -60,6 +60,8 @@ public class ChessPiece {
             return calculateKingMoves(board, myPosition);
         else if(type == PieceType.KNIGHT)
             return calculateKnightMoves(board, myPosition);
+        else if(type == PieceType.PAWN)
+            return calculatePawnMoves(board, myPosition);
         return new HashSet<ChessMove>();
         //throw new RuntimeException("Not implemented");
     }
@@ -266,6 +268,102 @@ public class ChessPiece {
             return new ChessMove(myPosition, new ChessPosition(row, col), null);
         else
             return null;
+    }
+
+    public HashSet<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // White Moves
+        if(pieceColor == ChessGame.TeamColor.WHITE) {
+            if(row + 1 < 9 && board.getPiece(new ChessPosition(row + 1, col)) == null) {
+                // Promotion moving normally
+                if(row + 1 == 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), PieceType.ROOK));
+                }
+                else {
+                    // Normal pawn move
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+                    // Pawn moving forward 2 when not blocked when it is at starting position
+                    if(row == 2 && board.getPiece(new ChessPosition(row + 2, col)) == null) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
+                    }
+                }
+            }
+            if(row + 1 < 9 && col + 1 < 9 && board.getPiece(new ChessPosition(row + 1, col + 1)) != null && board.getPiece(new ChessPosition(row + 1, col + 1)).pieceColor != pieceColor) {
+                // Capturing piece up and to the right (promotion)
+                if(row + 1 == 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), PieceType.ROOK));
+                }
+                // Capturing piece up and to the right (not promotion)
+                else
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), null));
+            }
+            if(row + 1 < 9 && col - 1 > 0 && board.getPiece(new ChessPosition(row + 1, col - 1)) != null && board.getPiece(new ChessPosition(row + 1, col - 1)).pieceColor != pieceColor) {
+                // Capturing piece down and to the left (promotion)
+                if(row + 1 == 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), PieceType.ROOK));
+                }
+                // Capturing piece down and to the left (not promotion)
+                else
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), null));
+            }
+        }
+        // Black Moves
+        else {
+            if(row - 1 > 0 && board.getPiece(new ChessPosition(row - 1, col)) == null) {
+                // Promotion moving normally
+                if(row - 1 == 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), PieceType.ROOK));
+                }
+                else {
+                    // Normal pawn move
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), null));
+                    // Pawn moving forward 2 when not blocked when it is at starting position
+                    if(row == 7 && board.getPiece(new ChessPosition(row - 2, col)) == null) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col), null));
+                    }
+                }
+            }
+            if(row - 1 > 0 && col + 1 < 9 && board.getPiece(new ChessPosition(row - 1, col + 1)) != null && board.getPiece(new ChessPosition(row - 1, col + 1)).pieceColor != pieceColor) {
+                // Capturing piece down and to the right (promotion)
+                if(row - 1 == 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), PieceType.ROOK));
+                }
+                // Capturing piece down and to the right (not promotion)
+                else
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), null));
+            }
+            if(row - 1 > 0 && col - 1 > 0 && board.getPiece(new ChessPosition(row - 1, col - 1)) != null && board.getPiece(new ChessPosition(row - 1, col - 1)).pieceColor != pieceColor) {
+                // Capturing piece down and to the left (promotion)
+                if(row - 1 == 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), PieceType.ROOK));
+                }
+                // Capturing piece down and to the left (not promotion)
+                else
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), null));
+            }
+        }
+        return moves;
     }
 
     @Override
