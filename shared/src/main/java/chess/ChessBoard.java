@@ -24,7 +24,6 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
-        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -36,7 +35,6 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow() - 1][position.getColumn() - 1];
-        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -100,8 +98,6 @@ public class ChessBoard {
 
         // New White King
         addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-
-        //throw new RuntimeException("Not implemented");
     }
     @Override
     public String toString() {
