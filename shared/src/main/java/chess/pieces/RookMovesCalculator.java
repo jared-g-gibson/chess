@@ -7,9 +7,19 @@ import chess.ChessPosition;
 
 import java.util.HashSet;
 
-public class RookMovesCalculator {
-    public static HashSet<ChessMove> calculateRookMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        HashSet<ChessMove> moves = new HashSet<>();
+public class RookMovesCalculator implements PieceMovesCalculator{
+
+
+    private final ChessGame.TeamColor pieceColor;
+
+    private final HashSet<ChessMove> moves;
+
+    public RookMovesCalculator(ChessGame.TeamColor c) {
+        pieceColor = c;
+        moves = new HashSet<>();
+
+    }
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow() + 1;
         int col = myPosition.getColumn();
         // Adds moves that rook can make that go up

@@ -7,13 +7,20 @@ import chess.ChessPosition;
 
 import java.util.HashSet;
 
-public class KnightMovesCalculator {
+public class KnightMovesCalculator implements PieceMovesCalculator{
+
+    private final ChessGame.TeamColor pieceColor;
+    private final HashSet<ChessMove> moves;
+
+    public KnightMovesCalculator(ChessGame.TeamColor c) {
+        pieceColor = c;
+        moves = new HashSet<>();
+    }
     /*
      * Function that returns possible moves for a knight
      * */
 
-    public static HashSet<ChessMove> calculateKnightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        HashSet<ChessMove> moves = new HashSet<>();
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 

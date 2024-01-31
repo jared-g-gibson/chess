@@ -53,18 +53,30 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        if(type == PieceType.BISHOP)
-            return BishopMovesCalculator.calculateBishopMoves(board, myPosition, pieceColor);
-        else if(type == PieceType.KING)
-            return KingMovesCalculator.calculateKingMoves(board, myPosition, pieceColor);
-        else if(type == PieceType.KNIGHT)
-            return KnightMovesCalculator.calculateKnightMoves(board, myPosition, pieceColor);
-        else if(type == PieceType.PAWN)
-            return PawnMovesCalculator.calculatePawnMoves(board, myPosition, pieceColor);
-        else if(type == PieceType.QUEEN)
-            return QueenMovesCalculator.calculateQueenMoves(board, myPosition, pieceColor);
-        else
-            return RookMovesCalculator.calculateRookMoves(board, myPosition, pieceColor);
+        if(type == PieceType.BISHOP) {
+            BishopMovesCalculator bishop = new BishopMovesCalculator(pieceColor);
+            return bishop.pieceMoves(board, myPosition);
+        }
+        else if(type == PieceType.KING) {
+            KingMovesCalculator king = new KingMovesCalculator(pieceColor);
+            return king.pieceMoves(board, myPosition);
+        }
+        else if(type == PieceType.KNIGHT) {
+            KnightMovesCalculator knight = new KnightMovesCalculator(pieceColor);
+            return knight.pieceMoves(board, myPosition);
+        }
+        else if(type == PieceType.PAWN) {
+            PawnMovesCalculator pawn = new PawnMovesCalculator(pieceColor);
+            return pawn.pieceMoves(board, myPosition);
+        }
+        else if(type == PieceType.QUEEN) {
+            QueenMovesCalculator queen = new QueenMovesCalculator(pieceColor);
+            return queen.pieceMoves(board, myPosition);
+        }
+        else {
+            RookMovesCalculator rook = new RookMovesCalculator(pieceColor);
+            return rook.pieceMoves(board, myPosition);
+        }
     }
 
     @Override

@@ -2,12 +2,18 @@ package chess.pieces;
 
 import chess.*;
 import java.util.*;
-public class KingMovesCalculator {
+public class KingMovesCalculator implements PieceMovesCalculator {
+
+    private final ChessGame.TeamColor pieceColor;
+    private final HashSet<ChessMove> moves;
+    public KingMovesCalculator(ChessGame.TeamColor c) {
+        pieceColor = c;
+        moves = new HashSet<>();
+    }
     /*
      * Function that calculates all possible positions a King can move from current position
      * */
-    public static HashSet<ChessMove> calculateKingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        HashSet<ChessMove> moves = new HashSet<>();
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 

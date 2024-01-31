@@ -4,12 +4,20 @@ import chess.*;
 
 import java.util.HashSet;
 
-public class PawnMovesCalculator {
+public class PawnMovesCalculator implements PieceMovesCalculator {
+
+    private final ChessGame.TeamColor pieceColor;
+
+    HashSet<ChessMove> moves;
+
+    public PawnMovesCalculator(ChessGame.TeamColor c) {
+        moves = new HashSet<>();
+        pieceColor = c;
+    }
     /*
      * Function that calculates all possible pawn moves and promotions
      *  */
-    public static HashSet<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        HashSet<ChessMove> moves = new HashSet<>();
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 

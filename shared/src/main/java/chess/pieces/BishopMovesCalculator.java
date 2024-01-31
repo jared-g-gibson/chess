@@ -3,12 +3,21 @@ package chess.pieces;
 import chess.*;
 
 import java.util.*;
-public class BishopMovesCalculator {
+public class BishopMovesCalculator implements PieceMovesCalculator {
+
+    private final ChessGame.TeamColor pieceColor;
+
+    private final HashSet<ChessMove> moves;
+
+    public BishopMovesCalculator(ChessGame.TeamColor c) {
+        pieceColor = c;
+        moves = new HashSet<>();
+    }
     /*
      * Function that calculates all possible positions a Bishop can move
      * */
-    public static HashSet<ChessMove> calculateBishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        HashSet<ChessMove> moves = new HashSet<>();
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+
         // Up and to the right
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
