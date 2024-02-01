@@ -49,6 +49,9 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
+
+    // TO DO: Make sure the king gets out of check
+
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         // There is no piece at this position
@@ -58,6 +61,7 @@ public class ChessGame {
         // Get the possible moves for the given piece
         Collection<ChessMove> moves = new HashSet<>();
         moves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new HashSet<>();
 
         // Iterate through moves, and simulate the move.
         // If the team's king goes into check from the move, remove that move.
@@ -70,9 +74,9 @@ public class ChessGame {
             board.addPiece(move.getEndPosition(), piece);
             board.removePiece(startPosition);
 
-            // If king is in check, remove the move from moves
-            if(isInCheck(piece.getTeamColor()))
-                moves.remove(move);
+            // If king is not in check, add the move to valid moves
+            if(!isInCheck(piece.getTeamColor()))
+                validMoves.add(move);
 
             // Reset board back to initial state
             board.addPiece(startPosition, piece);
@@ -80,7 +84,7 @@ public class ChessGame {
         }
 
         // Return the valid moves.
-        return moves;
+        return validMoves;
     }
 
     /**
