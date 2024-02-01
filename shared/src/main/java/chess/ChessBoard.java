@@ -18,6 +18,7 @@ public class ChessBoard {
 
     public ChessBoard(ChessBoard copy) {
         board = Arrays.copyOf(copy.board, copy.board.length);
+        //this.board = copy.board;
     }
 
     /**
@@ -28,6 +29,11 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    public void removePiece(ChessPosition position) {
+        if(getPiece(position) != null)
+            board[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**

@@ -50,11 +50,37 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        // throw new RuntimeException("Not implemented");
         ChessPiece piece = board.getPiece(startPosition);
+        // There is no piece at this position
         if (piece == null)
             return null;
-        return null;
+
+        // Get the possible moves for the given piece
+        Collection<ChessMove> moves = new HashSet<>();
+        moves = piece.pieceMoves(board, startPosition);
+
+        // Iterate through moves, and simulate the move.
+        // If the team's king goes into check from the move, remove that move.
+        for(ChessMove move : moves) {
+            // Make a copy of the chess board that we can revert back to
+            //ChessBoard boardCopy = new ChessBoard(board);
+
+            // Make the move
+            ChessPiece removedPiece = board.getPiece(move.getEndPosition());
+            board.addPiece(move.getEndPosition(), piece);
+            board.removePiece(startPosition);
+
+            // If king is in check, remove the move from moves
+            if(isInCheck(piece.getTeamColor()))
+                moves.remove(move);
+
+            // Reset board back to initial state
+            board.addPiece(startPosition, piece);
+            board.addPiece(move.getEndPosition(), removedPiece);
+        }
+
+        // Return the valid moves.
+        return moves;
     }
 
     /**
@@ -64,7 +90,31 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        // throw new RuntimeException("Not implemented");
+
+        //System.out.println(board.toString());
+
+        // It's not the piece's turn
+        if(board.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn())
+            throw new InvalidMoveException();
+
+        // The piece's final position is not in its moveset
+        Collection<ChessMove> validMoves = new HashSet<>();
+        validMoves = validMoves(move.getStartPosition());
+
+        for(ChessMove m : validMoves) {
+            // Execute the move
+            if(move.equals(m)) {
+                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                board.removePiece(move.getStartPosition());
+                if(board.getPiece(move.getEndPosition()).getTeamColor() == TeamColor.BLACK)
+                    setTeamTurn(TeamColor.WHITE);
+                else
+                    setTeamTurn(TeamColor.BLACK);
+                return;
+            }
+        }
+        throw new InvalidMoveException();
     }
 
     /**
