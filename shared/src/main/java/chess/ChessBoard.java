@@ -16,6 +16,10 @@ public class ChessBoard {
         board = new ChessPiece[8][8];
     }
 
+    public ChessBoard(ChessBoard copy) {
+        board = Arrays.copyOf(copy.board, copy.board.length);
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -35,6 +39,21 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    // Method used to find a piece
+    public ChessPosition findPiece(ChessPiece piece) {
+        for(int x = 1; x < 9; x++) {
+            for(int y = 1; y < 9; y++) {
+                // If there is a piece in a position, check the team color and
+                // piece type to see if it equals what we are looking for
+                if(getPiece(new ChessPosition(x, y)) != null && getPiece(new ChessPosition(x, y)).equals(piece))
+                        //getPiece(new ChessPosition(x, y)).getTeamColor() == piece.getTeamColor() &&
+                        //getPiece(new ChessPosition(x, y)).getPieceType() == piece.getPieceType())
+                    return new ChessPosition(x, y);
+            }
+        }
+        return null;
     }
 
     /**

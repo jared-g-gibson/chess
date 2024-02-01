@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,15 +11,18 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private TeamColor turn;
+    private ChessBoard board;
 
+    public ChessGame() {
+        turn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -46,7 +50,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        // throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null)
+            return null;
+        return null;
     }
 
     /**
@@ -66,7 +74,62 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //throw new RuntimeException("Not implemented");
+        // ChessBoard boardCopy = new ChessBoard(getBoard());
+        // White Team
+        if(teamColor == TeamColor.WHITE) {
+            // Find the White King
+            ChessPosition kingPos = board.findPiece(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING));
+            // Calculate all possible moves for Black to see if it can capture White King
+            return canCaptureKing(kingPos, TeamColor.WHITE);
+        }
+        // Black Team
+        else {
+            // Find the Black King
+            ChessPosition kingPos = board.findPiece(new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.KING));
+            // Calculate all possible moves for White to see if it can capture Black King
+            return canCaptureKing(kingPos, TeamColor.BLACK);
+        }
+    }
+    public boolean canCaptureKing(ChessPosition kingPos, TeamColor color) {
+        // Returns whether white piece can capture black king
+        if(color == TeamColor.BLACK) {
+            // Loop through all the pieces
+            for(int x = 1; x < 9; x++) {
+                for(int y = 1; y < 9; y++) {
+                    Collection<ChessMove> moves = new HashSet<>();
+                    ChessPiece piece = board.getPiece(new ChessPosition(x, y));
+                    // For each piece of a different color, check and see if king position
+                    // is one of the possible piece moves
+                    if(piece != null && color != piece.getTeamColor()) {
+                        moves = piece.pieceMoves(board, new ChessPosition(x, y));
+                        if(piece.findMove(kingPos, moves))
+                            return true;
+                    }
+                }
+            }
+        }
+
+        // Returns whether black piece can capture white king
+        else {
+            // Loop through all the pieces
+            for(int x = 1; x < 9; x++) {
+                for(int y = 1; y < 9; y++) {
+                    Collection<ChessMove> moves = new HashSet<>();
+                    ChessPiece piece = board.getPiece(new ChessPosition(x, y));
+                    // For each piece of a different color, check and see if king position
+                    // is one of the possible piece moves
+                    if(piece != null && color != piece.getTeamColor()) {
+                        moves = piece.pieceMoves(board, new ChessPosition(x, y));
+                        if(piece.findMove(kingPos, moves))
+                            return true;
+                    }
+                }
+            }
+        }
+
+
+        return false;
     }
 
     /**
@@ -96,7 +159,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +168,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }

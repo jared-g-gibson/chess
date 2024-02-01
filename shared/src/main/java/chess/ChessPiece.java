@@ -79,6 +79,16 @@ public class ChessPiece {
         }
     }
 
+
+    // If a piece's endPosition == position we are looking for, we return true
+    public boolean findMove(ChessPosition pos, Collection<ChessMove> moves) {
+        for(ChessMove m : moves) {
+            if(m.getEndPosition().equals(pos))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return "ChessPiece{" +
