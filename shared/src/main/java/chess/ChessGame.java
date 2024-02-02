@@ -109,7 +109,10 @@ public class ChessGame {
         for(ChessMove m : validMoves) {
             // Execute the move
             if(move.equals(m)) {
-                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                if (move.getPromotionPiece() == null)
+                    board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                else
+                    board.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
                 board.removePiece(move.getStartPosition());
                 if(board.getPiece(move.getEndPosition()).getTeamColor() == TeamColor.BLACK)
                     setTeamTurn(TeamColor.WHITE);
