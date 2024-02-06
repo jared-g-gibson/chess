@@ -54,22 +54,20 @@ public class ChessGame {
 
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        // There is no piece at this position
+        // There is no piece at this position, so the valid moves is null
         if (piece == null)
             return null;
 
         // Get the possible moves for the given piece
-        Collection<ChessMove> moves = new HashSet<>();
+        Collection<ChessMove> moves;
         moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<>();
 
         // Iterate through moves, and simulate the move.
-        // If the team's king goes into check from the move, remove that move.
+        // If the team's king goes into check from the move,
+        // don't add move to valid moves.
         for(ChessMove move : moves) {
-            // Make a copy of the chess board that we can revert back to
-            //ChessBoard boardCopy = new ChessBoard(board);
-
-            // Make the move
+            // Simulate the move
             ChessPiece removedPiece = board.getPiece(move.getEndPosition());
             board.addPiece(move.getEndPosition(), piece);
             board.removePiece(startPosition);
@@ -94,26 +92,29 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // throw new RuntimeException("Not implemented");
-
-        //System.out.println(board.toString());
-
-        // It's not the piece's turn
+        // It's not the piece's turn, so throw InvalidMoveException
         if(board.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn())
             throw new InvalidMoveException();
 
-        // The piece's final position is not in its moveset
+        // The piece's final position is not in its move set
         Collection<ChessMove> validMoves = new HashSet<>();
         validMoves = validMoves(move.getStartPosition());
 
         for(ChessMove m : validMoves) {
             // Execute the move
             if(move.equals(m)) {
-                if (move.getPromotionPiece() == null)
+                // If there is a promotionPiece, add that piece to the board,
+                // else, add the regular piece
+                // Remove the old piece from the board
+                if (move.getPromotionPiece() == null) {
                     board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-                else
+                }
+                else {
                     board.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
+                }
                 board.removePiece(move.getStartPosition());
+
+                // Change turn to other team since valid move was made
                 if(board.getPiece(move.getEndPosition()).getTeamColor() == TeamColor.BLACK)
                     setTeamTurn(TeamColor.WHITE);
                 else
@@ -121,6 +122,8 @@ public class ChessGame {
                 return;
             }
         }
+
+        // Invalid move was passed to method, so throw InvalidMoveException
         throw new InvalidMoveException();
     }
 
@@ -131,8 +134,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
-        // ChessBoard boardCopy = new ChessBoard(getBoard());
         // White Team
         if(teamColor == TeamColor.WHITE) {
             // Find the White King
@@ -196,6 +197,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // According to our definition, a team is in checkmate if they are
+        // unable to move and are in check
         return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 
