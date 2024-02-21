@@ -1,5 +1,6 @@
 package server;
 
+import service.UserService;
 import spark.*;
 
 public class Server {
