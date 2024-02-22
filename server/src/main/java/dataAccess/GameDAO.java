@@ -9,4 +9,5 @@ public interface GameDAO {
     public GameData getGame();
     public Collection<GameData> getGames();
     public void updateGame();
+    public void clear();
 }

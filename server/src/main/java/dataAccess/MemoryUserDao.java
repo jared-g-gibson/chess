@@ -2,14 +2,20 @@ package dataAccess;
 
 import model.UserData;
 
+import java.util.HashMap;
+
 public class MemoryUserDao implements UserDAO {
+
+    private static HashMap<String, UserData> users = new HashMap<>();
+
     public void clear() {
-        return;
+        users.clear();
     }
-    public void createUser() {
+    public void createUser(UserData data) {
+        users.put(data.username(), data);
         return;
     };
-    public UserData getUser() {
-        return null;
+    public UserData getUser(String username) {
+        return users.get(username);
     }
 }
