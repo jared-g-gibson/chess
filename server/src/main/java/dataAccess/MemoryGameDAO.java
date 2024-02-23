@@ -3,6 +3,7 @@ package dataAccess;
 import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +27,13 @@ public class MemoryGameDAO implements GameDAO{
         return null;
     }
 
-    public Collection<GameData> getGames() {
-        return null;
+    public ArrayList<GameData> getGames() {
+        ArrayList<GameData> gameList = new ArrayList<>();
+        for(HashMap.Entry<String, GameData> entry : games.entrySet()) {
+            GameData value = entry.getValue();
+            gameList.add(value);
+        }
+        return gameList;
     }
 
     public int getNumGames() {
@@ -35,7 +41,7 @@ public class MemoryGameDAO implements GameDAO{
     }
     public void updateGame(String color, String username, String gameID) {
         if(color.equals("WHITE")) {
-            games.put(gameID, (games.get(gameID)).addWhiteUser(username));
+            games.put(gameID, games.get(gameID).addWhiteUser(username));
         }
         else if(color.equals("BLACK")) {
             games.put(gameID, (games.get(gameID)).addBlackUser(username));

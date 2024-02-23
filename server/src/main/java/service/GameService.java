@@ -6,8 +6,11 @@ import model.GameData;
 import request.CreateGameRequest;
 import request.GameRequest;
 import request.JoinRequest;
+import request.ListGamesRequest;
 
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameService {
     private AuthDAO auths;
@@ -29,7 +32,7 @@ public class GameService {
 
         // Create New Game
         int gameID = games.getNumGames() + 1;
-        GameData newGame = new GameData(games.getNumGames(), null, null, gameRequest.gameName(), new ChessGame());
+        GameData newGame = new GameData(gameID, null, null, gameRequest.gameName(), new ChessGame());
         games.createGame(newGame);
         return Integer.toString(gameID);
     }
@@ -48,12 +51,20 @@ public class GameService {
         if(joinRequest.color().equals("WHITE") && games.getGame(joinRequest.gameID()).whiteUsername() != null)
             throw new DataAccessException("Error: already taken");
         // Black is already taken
-        if(joinRequest.color().equals("BLACk") && games.getGame(joinRequest.gameID()).blackUsername() != null)
+        if(joinRequest.color().equals("BLACK") && games.getGame(joinRequest.gameID()).blackUsername() != null)
             throw new DataAccessException("Error: already taken");
 
         // Update games based on color
         games.updateGame(joinRequest.color(), auths.getAuth(joinRequest.authToken()).username(), joinRequest.gameID());
 
         return;
+    }
+
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+        // If not authorized, throw error
+        if(auths.getAuth(authToken) == null)
+            throw new DataAccessException("Error: unauthorized");
+        // Return games
+        return games.getGames();
     }
 }
