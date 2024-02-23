@@ -33,9 +33,10 @@ public class Server {
         LogoutHandler logoutHandler = new LogoutHandler(auths, users);
         Spark.delete("/session", (request, response) -> logoutHandler.handle(request, response));
         // Create Game Endpoint
-        CreateGameHandler createGameHandler = new CreateGameHandler();
+        CreateGameHandler createGameHandler = new CreateGameHandler(auths, games);
         Spark.post("/game", (request, response) -> createGameHandler.handle(request, response));
         // Join Game
+
         // List Games
 
         Spark.init();
