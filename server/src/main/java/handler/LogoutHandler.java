@@ -5,33 +5,30 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.ErrorMessage;
 import dataAccess.UserDAO;
-import model.UserData;
-import org.eclipse.jetty.util.log.Log;
 import request.LoginRequest;
-import response.LoginResponse;
-import response.RegisterResponse;
+import request.LogoutRequest;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 
-public class LoginHandler extends Handler {
+import java.util.ArrayList;
+
+public class LogoutHandler extends Handler {
     private AuthDAO auths;
     private UserDAO users;
-    public LoginHandler(AuthDAO auths, UserDAO users) {
+    public LogoutHandler(AuthDAO auths, UserDAO users) {
         this.auths = auths;
         this.users = users;
     }
     @Override
     public String handle(Request req, Response res) {
-        // Deserializing json object into LoginRequest Object
         var serializer = new Gson();
-        LoginRequest loginRequest = serializer.fromJson(req.body(), LoginRequest.class);
-
-        // Calling Login Service
+        // ArrayList<String> authTokens = new ArrayList<>(req.headers());
+        LogoutRequest logoutRequest = new LogoutRequest(req.headers("authorization")); //serializer.fromJson(authTokens.getFirst(), LogoutRequest.class);
         UserService service = new UserService(auths, users);
-        String authToken = null;
+
         try {
-            authToken = service.login(loginRequest);
+            service.logout(logoutRequest.authToken());
         } catch (DataAccessException e) {
             if(e.getMessage().equals("Error: unauthorized")) {
                 res.status(401);
@@ -44,10 +41,7 @@ public class LoginHandler extends Handler {
                 return serializer.toJson(message);
             }
         }
-
-        // Serializes username and authToken back in json
-        LoginResponse response = new LoginResponse(null, authToken, loginRequest.username());
         res.status(200);
-        return serializer.toJson(response);
+        return "{}";
     }
 }

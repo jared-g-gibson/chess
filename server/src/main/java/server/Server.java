@@ -1,9 +1,8 @@
 package server;
 
-import dataAccess.MemoryUserDao;
-import handler.DeleteHandler;
-import handler.LoginHandler;
-import handler.RegisterHandler;
+import dataAccess.*;
+import handler.*;
+import org.eclipse.jetty.util.log.Log;
 import service.UserService;
 import spark.*;
 
@@ -14,17 +13,30 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
+        // Data Access Objects
+        UserDAO users = new MemoryUserDao();
+        AuthDAO auths = new MemoryAuthDAO();
+        GameDAO games = new MemoryGameDAO();
 
+
+        // Register your endpoints and handle exceptions here.
         // Clear Endpoint
-        DeleteHandler deleteHandler = new DeleteHandler();
+        DeleteHandler deleteHandler = new DeleteHandler(auths, games, users);
         Spark.delete("/db", ((request, response) -> deleteHandler.handle(request, response)));
         // Register Endpoint
-        RegisterHandler registerHandler = new RegisterHandler();
+        RegisterHandler registerHandler = new RegisterHandler(auths, users);
         Spark.post("/user", (request, response) -> registerHandler.handle(request, response));
         // Login Endpoint
-        LoginHandler loginHandler = new LoginHandler();
+        LoginHandler loginHandler = new LoginHandler(auths, users);
         Spark.post("/session", (request, response) -> loginHandler.handle(request, response));
+        // Logout Endpoint
+        LogoutHandler logoutHandler = new LogoutHandler(auths, users);
+        Spark.delete("/session", (request, response) -> logoutHandler.handle(request, response));
+        // Create Game Endpoint
+        CreateGameHandler createGameHandler = new CreateGameHandler();
+        Spark.post("/game", (request, response) -> createGameHandler.handle(request, response));
+        // Join Game
+        // List Games
 
         Spark.init();
         // Spark.delete("/db", ((request, response) -> null));

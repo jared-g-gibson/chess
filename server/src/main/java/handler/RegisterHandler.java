@@ -1,8 +1,10 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.ErrorMessage;
+import dataAccess.UserDAO;
 import model.UserData;
 import response.RegisterResponse;
 import service.UserService;
@@ -12,6 +14,14 @@ import spark.Response;
 import java.util.Objects;
 
 public class RegisterHandler extends Handler {
+
+    private AuthDAO auths;
+    private UserDAO users;
+
+    public RegisterHandler(AuthDAO auths, UserDAO users) {
+        this.auths = auths;
+        this.users = users;
+    }
     public String handle(Request req, Response res) {
         // Use gson to convert req.body to RegisterRequest
         // Deserializes data from request
@@ -19,7 +29,7 @@ public class RegisterHandler extends Handler {
         var userData = serializer.fromJson(req.body(), UserData.class);
 
         // Passes userData to register service for more processing
-        UserService service = new UserService();
+        UserService service = new UserService(auths, users);
         String authToken = null;
         try {
             if(userData.username() == null || userData.email() == null || userData.password() == null)

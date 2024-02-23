@@ -1,40 +1,36 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.ErrorMessage;
-import dataAccess.UserDAO;
-import model.UserData;
-import org.eclipse.jetty.util.log.Log;
+import request.CreateGameRequest;
+import request.GameRequest;
 import request.LoginRequest;
+import response.CreateGameResponse;
 import response.LoginResponse;
-import response.RegisterResponse;
-import service.UserService;
+import service.GameService;
 import spark.Request;
 import spark.Response;
 
-public class LoginHandler extends Handler {
-    private AuthDAO auths;
-    private UserDAO users;
-    public LoginHandler(AuthDAO auths, UserDAO users) {
-        this.auths = auths;
-        this.users = users;
-    }
+public class CreateGameHandler extends Handler {
+
     @Override
     public String handle(Request req, Response res) {
-        // Deserializing json object into LoginRequest Object
         var serializer = new Gson();
-        LoginRequest loginRequest = serializer.fromJson(req.body(), LoginRequest.class);
-
-        // Calling Login Service
-        UserService service = new UserService(auths, users);
-        String authToken = null;
+        CreateGameRequest gameName = serializer.fromJson(req.body(), CreateGameRequest.class);
+        GameRequest gameRequest = new GameRequest(gameName.gameName(), req.headers("Authorization"));
+        GameService service = new GameService();
+        String gameID = null;
         try {
-            authToken = service.login(loginRequest);
+            gameID = service.createGame(gameRequest);
         } catch (DataAccessException e) {
             if(e.getMessage().equals("Error: unauthorized")) {
                 res.status(401);
+                ErrorMessage message = new ErrorMessage(e.getMessage());
+                return serializer.toJson(message);
+            }
+            else if(e.getMessage().equals("Error: bad request")) {
+                res.status(400);
                 ErrorMessage message = new ErrorMessage(e.getMessage());
                 return serializer.toJson(message);
             }
@@ -44,10 +40,8 @@ public class LoginHandler extends Handler {
                 return serializer.toJson(message);
             }
         }
-
-        // Serializes username and authToken back in json
-        LoginResponse response = new LoginResponse(null, authToken, loginRequest.username());
         res.status(200);
+        CreateGameResponse response = new CreateGameResponse(null, gameID);
         return serializer.toJson(response);
     }
 }

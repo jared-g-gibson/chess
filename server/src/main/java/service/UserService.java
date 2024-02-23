@@ -1,47 +1,50 @@
 package service;
 
 import dataAccess.*;
-import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
-import spark.Request;
-import spark.Response;
-
-import javax.xml.crypto.Data;
 
 public class UserService {
+    private AuthDAO auths;
+    private UserDAO users;
+    public UserService(AuthDAO auths, UserDAO users) {
+        this.auths = auths;
+        this.users = users;
+    }
     public String register(UserData userData) throws DataAccessException {
-        UserDAO user = new MemoryUserDao();
         // Check if the user is taken
-        if(null != user.getUser(userData.username()))
+        if(null != users.getUser(userData.username()))
             throw new DataAccessException("Error: already taken");
 
         // Create User
-        user.createUser(userData);
+        users.createUser(userData);
 
         // Create Auth Token from User
-        AuthDAO auth = new MemoryAuthDAO();
-        String authToken = auth.createAuth(userData.username());
+        String authToken = auths.createAuth(userData.username());
 
         // Return Auth Token
         return authToken;
     }
     public String login(LoginRequest loginInfo) throws DataAccessException {
-        UserDAO user = new MemoryUserDao();
         // If username does not exist, throw error
-        if(user.getUser(loginInfo.username()) == null)
+        if(users.getUser(loginInfo.username()) == null)
             throw new DataAccessException("Error: unauthorized");
 
         // If usernames and passwords do not match, throw error
-        if(!user.getUser(loginInfo.username()).username().equals(loginInfo.username()) ||
-            !user.getUser(loginInfo.username()).password().equals(loginInfo.password()))
+        if(!users.getUser(loginInfo.username()).username().equals(loginInfo.username()) ||
+            !users.getUser(loginInfo.username()).password().equals(loginInfo.password()))
             throw new DataAccessException("Error: unauthorized");
 
         // Create Auth Token from User
-        AuthDAO auth = new MemoryAuthDAO();
-        String authToken = auth.createAuth(loginInfo.username());
-
-        return authToken;
+        return auths.createAuth(loginInfo.username());
     }
-    public void logout(UserData user) {}
+    public void logout(String authToken) throws DataAccessException {
+
+        // If authToken does not exist, throw error
+        if(auths.getAuth(authToken) == null)
+            throw new DataAccessException("Error: unauthorized");
+
+        // Remove authToken
+        auths.deleteAuth(authToken);
+    }
 }
