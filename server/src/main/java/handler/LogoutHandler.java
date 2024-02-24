@@ -23,8 +23,7 @@ public class LogoutHandler extends Handler {
     @Override
     public String handle(Request req, Response res) {
         var serializer = new Gson();
-        // ArrayList<String> authTokens = new ArrayList<>(req.headers());
-        LogoutRequest logoutRequest = new LogoutRequest(req.headers("authorization")); //serializer.fromJson(authTokens.getFirst(), LogoutRequest.class);
+        LogoutRequest logoutRequest = new LogoutRequest(req.headers("authorization"));
         UserService service = new UserService(auths, users);
 
         try {

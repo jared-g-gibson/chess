@@ -151,42 +151,24 @@ public class ChessGame {
     }
     public boolean canCaptureKing(ChessPosition kingPos, TeamColor color) {
         // Returns whether white piece can capture black king
-        if(color == TeamColor.BLACK) {
-            // Loop through all the pieces
-            for(int x = 1; x < 9; x++) {
-                for(int y = 1; y < 9; y++) {
-                    Collection<ChessMove> moves = new HashSet<>();
-                    ChessPiece piece = board.getPiece(new ChessPosition(x, y));
-                    // For each piece of a different color, check and see if king position
-                    // is one of the possible piece moves
-                    if(piece != null && color != piece.getTeamColor()) {
-                        moves = piece.pieceMoves(board, new ChessPosition(x, y));
-                        if(piece.findMove(kingPos, moves))
-                            return true;
-                    }
+        return kingInDanger(kingPos, color);
+    }
+
+    public boolean kingInDanger(ChessPosition kingPos, TeamColor color) {
+        // Loop through all the pieces
+        for(int x = 1; x < 9; x++) {
+            for(int y = 1; y < 9; y++) {
+                Collection<ChessMove> moves = new HashSet<>();
+                ChessPiece piece = board.getPiece(new ChessPosition(x, y));
+                // For each piece of a different color, check and see if king position
+                // is one of the possible piece moves
+                if(piece != null && color != piece.getTeamColor()) {
+                    moves = piece.pieceMoves(board, new ChessPosition(x, y));
+                    if(piece.findMove(kingPos, moves))
+                        return true;
                 }
             }
         }
-
-        // Returns whether black piece can capture white king
-        else {
-            // Loop through all the pieces
-            for(int x = 1; x < 9; x++) {
-                for(int y = 1; y < 9; y++) {
-                    Collection<ChessMove> moves = new HashSet<>();
-                    ChessPiece piece = board.getPiece(new ChessPosition(x, y));
-                    // For each piece of a different color, check and see if king position
-                    // is one of the possible piece moves
-                    if(piece != null && color != piece.getTeamColor()) {
-                        moves = piece.pieceMoves(board, new ChessPosition(x, y));
-                        if(piece.findMove(kingPos, moves))
-                            return true;
-                    }
-                }
-            }
-        }
-
-
         return false;
     }
 
