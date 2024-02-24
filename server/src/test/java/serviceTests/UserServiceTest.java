@@ -23,7 +23,7 @@ class UserServiceTest {
         service.register(joe);
 
         // Check if added successfully
-        Assertions.assertEquals(1, users.getNumUsers());
+        Assertions.assertNotNull(users.getUser("Joe"));
         Assertions.assertEquals(new UserData("Joe", "password", "joe@gmail.com"), users.getUser("Joe"));
 
         // Clear users and auths for future tests
@@ -51,8 +51,7 @@ class UserServiceTest {
             Assertions.assertEquals( "Error: already taken", e.getMessage());
         }
 
-        // Check if Joe is only user
-        Assertions.assertEquals(1, users.getNumUsers());
+        Assertions.assertNotNull(users.getUser("Joe"));
         Assertions.assertEquals(new UserData("Joe", "password", "joe@gmail.com"), users.getUser("Joe"));
 
         // Clear users and auths for future tests
@@ -79,7 +78,7 @@ class UserServiceTest {
         String authToken = service.login(loginRequest);
 
         // Check logged in successfully
-        Assertions.assertEquals(1, users.getNumUsers());
+        Assertions.assertNotNull(users.getUser("Joe"));
         Assertions.assertEquals(new AuthData(authToken, "Joe"), auths.getAuth(authToken));
 
         // Clear users and auths for future tests
@@ -140,7 +139,7 @@ class UserServiceTest {
         String authToken = service.login(loginRequest);
 
         // Check logged in successfully
-        Assertions.assertEquals(1, users.getNumUsers());
+        Assertions.assertNotNull(users.getUser("Joe"));
         Assertions.assertEquals(new AuthData(authToken, "Joe"), auths.getAuth(authToken));
 
         // Try to logout
@@ -173,7 +172,7 @@ class UserServiceTest {
         String authToken = service.login(loginRequest);
 
         // Check logged in successfully
-        Assertions.assertEquals(1, users.getNumUsers());
+        Assertions.assertNotNull(users.getUser("Joe"));
         Assertions.assertEquals(new AuthData(authToken, "Joe"), auths.getAuth(authToken));
 
         // Try to logout

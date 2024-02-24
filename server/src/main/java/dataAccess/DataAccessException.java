@@ -1,7 +1,6 @@
 package dataAccess;
 
 import com.google.gson.Gson;
-import spark.Request;
 import spark.Response;
 
 /**

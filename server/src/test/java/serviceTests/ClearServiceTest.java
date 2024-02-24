@@ -17,19 +17,19 @@ class ClearServiceTest {
         GameDAO games = new MemoryGameDAO();
         UserDAO users = new MemoryUserDAO();
         // Adding auth, game and user to auths, games, and users
-        auths.createAuth("Joe");
-        games.createGame(new GameData(0, "White", "Black", "Game", new ChessGame()));
+        String authToken = auths.createAuth("Joe");
+        games.createGame(new GameData(1, "White", "Black", "Game", new ChessGame()));
         users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
         // Assert that they were added to DAOs successfully
-        Assertions.assertNotEquals(auths.getNumAuths(), 0);
-        Assertions.assertNotEquals(games.getNumGames(), 0);
-        Assertions.assertNotEquals(users.getNumUsers(), 0);
+        Assertions.assertNotNull(auths.getAuth(authToken));
+        Assertions.assertNotNull(games.getGame("1"));
+        Assertions.assertNotNull(users.getUser("Joe"));
         // Call the clear function
         ClearService service = new ClearService(auths, games, users);
         service.clear();
         // Assert that clear function successfully cleared DAOs
-        Assertions.assertEquals(auths.getNumAuths(), 0);
-        Assertions.assertEquals(games.getNumGames(), 0);
-        Assertions.assertEquals(users.getNumUsers(), 0);
+        Assertions.assertNull(auths.getAuth(authToken));
+        Assertions.assertNull(games.getGame("1"));
+        Assertions.assertNull(users.getUser("Joe"));
     }
 }
