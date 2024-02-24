@@ -32,21 +32,7 @@ public class CreateGameHandler extends Handler {
         try {
             gameID = service.createGame(gameRequest);
         } catch (DataAccessException e) {
-            if(e.getMessage().equals("Error: unauthorized")) {
-                res.status(401);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else if(e.getMessage().equals("Error: bad request")) {
-                res.status(400);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
         res.status(200);
         CreateGameResponse response = new CreateGameResponse(null, gameID);

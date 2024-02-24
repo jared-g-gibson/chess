@@ -36,21 +36,7 @@ public class RegisterHandler extends Handler {
                 throw new DataAccessException("Error: bad request");
             authToken = service.register(userData);
         } catch (DataAccessException e) {
-            if(Objects.equals(e.getMessage(), "Error: bad request")) {
-                res.status(400);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else if(Objects.equals(e.getMessage(), "Error: already taken")) {
-                res.status(403);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
 
         // Serializes username and authtoken back in json

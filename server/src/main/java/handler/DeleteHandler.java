@@ -23,9 +23,7 @@ public class DeleteHandler extends Handler {
         try {
             clear.clear();
         } catch (DataAccessException e) {
-            res.status(500);
-            ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-            return serializer.toJson(message);
+            return e.getException(res);
         }
         res.status(200);
         return "{}";

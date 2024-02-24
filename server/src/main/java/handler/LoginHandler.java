@@ -33,16 +33,7 @@ public class LoginHandler extends Handler {
         try {
             authToken = service.login(loginRequest);
         } catch (DataAccessException e) {
-            if(e.getMessage().equals("Error: unauthorized")) {
-                res.status(401);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
 
         // Serializes username and authToken back in json

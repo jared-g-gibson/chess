@@ -28,26 +28,7 @@ public class JoinGameHandler extends Handler{
         try {
             service.joinGame(joinRequest);
         } catch (DataAccessException e) {
-            if(e.getMessage().equals("Error: unauthorized")) {
-                res.status(401);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else if(e.getMessage().equals("Error: bad request")) {
-                res.status(400);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else if(e.getMessage().equals("Error: already taken")) {
-                res.status(403);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
         res.status(200);
         return "{}";

@@ -33,16 +33,7 @@ public class ListGamesHandler extends Handler{
         try {
             games = service.listGames(req.headers("authorization"));
         } catch (DataAccessException e) {
-            if(e.getMessage().equals("Error: unauthorized")) {
-                res.status(401);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
         res.status(200);
         ListGamesResponse response = new ListGamesResponse(null, games);

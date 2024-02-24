@@ -29,16 +29,7 @@ public class LogoutHandler extends Handler {
         try {
             service.logout(logoutRequest.authToken());
         } catch (DataAccessException e) {
-            if(e.getMessage().equals("Error: unauthorized")) {
-                res.status(401);
-                ErrorMessage message = new ErrorMessage(e.getMessage());
-                return serializer.toJson(message);
-            }
-            else {
-                res.status(500);
-                ErrorMessage message = new ErrorMessage("Error: " + e.getMessage());
-                return serializer.toJson(message);
-            }
+            return e.getException(res);
         }
         res.status(200);
         return "{}";
