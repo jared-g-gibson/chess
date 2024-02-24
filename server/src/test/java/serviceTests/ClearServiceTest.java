@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import service.ClearService;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ClearServiceTest {
 
     @Test
@@ -17,7 +15,7 @@ class ClearServiceTest {
         // Clear test creates new Data Access Objects
         AuthDAO auths = new MemoryAuthDAO();
         GameDAO games = new MemoryGameDAO();
-        UserDAO users = new MemoryUserDao();
+        UserDAO users = new MemoryUserDAO();
         // Adding auth, game and user to auths, games, and users
         auths.createAuth("Joe");
         games.createGame(new GameData(0, "White", "Black", "Game", new ChessGame()));

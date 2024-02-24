@@ -2,8 +2,6 @@ package server;
 
 import dataAccess.*;
 import handler.*;
-import org.eclipse.jetty.util.log.Log;
-import service.UserService;
 import spark.*;
 
 public class Server {
@@ -14,7 +12,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Data Access Objects
-        UserDAO users = new MemoryUserDao();
+        UserDAO users = new MemoryUserDAO();
         AuthDAO auths = new MemoryAuthDAO();
         GameDAO games = new MemoryGameDAO();
 
