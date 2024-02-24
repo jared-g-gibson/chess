@@ -44,7 +44,7 @@ public class GameService {
         // Game does not exist
         if(games.getGame(joinRequest.gameID()) == null)
             throw new DataAccessException("Error: bad request");
-        // If color is empty, return. They are an observer
+        // If playerColor is empty, return. They are an observer
         if(joinRequest.color() == null)
             return;
         // White is already taken
@@ -54,10 +54,9 @@ public class GameService {
         if(joinRequest.color().equals("BLACK") && games.getGame(joinRequest.gameID()).blackUsername() != null)
             throw new DataAccessException("Error: already taken");
 
-        // Update games based on color
+        // Update games based on playerColor
         games.updateGame(joinRequest.color(), auths.getAuth(joinRequest.authToken()).username(), joinRequest.gameID());
 
-        return;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {

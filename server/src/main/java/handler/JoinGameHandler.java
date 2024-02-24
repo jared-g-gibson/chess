@@ -23,7 +23,7 @@ public class JoinGameHandler extends Handler{
     public String handle(Request req, Response res) {
         var serializer = new Gson();
         JoinGameRequest joinGameRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
-        JoinRequest joinRequest = new JoinRequest(req.headers("authorization"), joinGameRequest.color(), joinGameRequest.gameID());
+        JoinRequest joinRequest = new JoinRequest(req.headers("authorization"), joinGameRequest.playerColor(), joinGameRequest.gameID());
         GameService service = new GameService(auths, games);
         try {
             service.joinGame(joinRequest);

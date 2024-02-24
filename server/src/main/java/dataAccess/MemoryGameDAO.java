@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 import model.UserData;
 
@@ -44,7 +45,7 @@ public class MemoryGameDAO implements GameDAO{
             games.put(gameID, games.get(gameID).addWhiteUser(username));
         }
         else if(color.equals("BLACK")) {
-            games.put(gameID, (games.get(gameID)).addBlackUser(username));
+            games.put(gameID, games.get(gameID).addBlackUser(username));
         }
 
     }
