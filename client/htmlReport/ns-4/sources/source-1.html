@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DataAccessException</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dataAccess</a>
+</div>
+
+<h1>Coverage Summary for Class: DataAccessException (dataAccess)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DataAccessException</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82.4%
+  </span>
+  <span class="absValue">
+    (14/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dataAccess;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;import spark.Response;
+&nbsp;
+&nbsp;/**
+&nbsp; * Indicates there was an error connecting to the database
+&nbsp; */
+&nbsp;public class DataAccessException extends Exception{
+&nbsp;    public DataAccessException(String message) {
+<b class="fc">&nbsp;        super(message);</b>
+&nbsp;    }
+&nbsp;    public String getException(Response res) {
+<b class="fc">&nbsp;        var serializer = new Gson();</b>
+<b class="fc">&nbsp;        if(getMessage().equals(&quot;Error: bad request&quot;)) {</b>
+<b class="fc">&nbsp;            res.status(400);</b>
+<b class="fc">&nbsp;            ErrorMessage message = new ErrorMessage(getMessage());</b>
+<b class="fc">&nbsp;            return serializer.toJson(message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        else if(getMessage().equals(&quot;Error: unauthorized&quot;)) {</b>
+<b class="fc">&nbsp;            res.status(401);</b>
+<b class="fc">&nbsp;            ErrorMessage message = new ErrorMessage(getMessage());</b>
+<b class="fc">&nbsp;            return serializer.toJson(message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        else if(getMessage().equals(&quot;Error: already taken&quot;)) {</b>
+<b class="fc">&nbsp;            res.status(403);</b>
+<b class="fc">&nbsp;            ErrorMessage message = new ErrorMessage(getMessage());</b>
+<b class="fc">&nbsp;            return serializer.toJson(message);</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            res.status(500);</b>
+<b class="nc">&nbsp;            ErrorMessage message = new ErrorMessage(&quot;Error: &quot; + getMessage());</b>
+<b class="nc">&nbsp;            return serializer.toJson(message);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

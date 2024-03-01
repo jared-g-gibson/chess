@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">service</a>
+</div>
+
+<h1>Coverage Summary for Class: GameService (service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.2%
+  </span>
+  <span class="absValue">
+    (25/26)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package service;
+&nbsp;
+&nbsp;import chess.ChessGame;
+&nbsp;import dataAccess.*;
+&nbsp;import model.GameData;
+&nbsp;import request.CreateGameRequest;
+&nbsp;import request.GameRequest;
+&nbsp;import request.JoinRequest;
+&nbsp;import request.ListGamesRequest;
+&nbsp;
+&nbsp;import javax.xml.crypto.Data;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;
+&nbsp;public class GameService {
+&nbsp;    private AuthDAO auths;
+&nbsp;    private GameDAO games;
+<b class="fc">&nbsp;    public GameService(AuthDAO auths, GameDAO games) {</b>
+<b class="fc">&nbsp;        this.auths = auths;</b>
+<b class="fc">&nbsp;        this.games = games;</b>
+&nbsp;    }
+&nbsp;    public String createGame(GameRequest gameRequest) throws DataAccessException {
+&nbsp;        // If authToken does not exist, throw error
+<b class="fc">&nbsp;        if(gameRequest.authToken() == null || gameRequest.gameName() == null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: bad request&quot;);</b>
+&nbsp;        // If game already exists, throw error
+<b class="fc">&nbsp;        if(games.getGameFromGameName(gameRequest.gameName()) != null)</b>
+<b class="nc">&nbsp;            throw new DataAccessException(&quot;Error: bad request&quot;);</b>
+&nbsp;        // If not authorized, throw error
+<b class="fc">&nbsp;        if(auths.getAuth(gameRequest.authToken()) == null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: unauthorized&quot;);</b>
+&nbsp;
+&nbsp;        // Create New Game
+<b class="fc">&nbsp;        int gameID = games.getNumGames() + 1;</b>
+<b class="fc">&nbsp;        GameData newGame = new GameData(gameID, null, null, gameRequest.gameName(), new ChessGame());</b>
+<b class="fc">&nbsp;        games.createGame(newGame);</b>
+<b class="fc">&nbsp;        return Integer.toString(gameID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void joinGame(JoinRequest joinRequest) throws DataAccessException {
+&nbsp;        // If not authorized, throw error
+<b class="fc">&nbsp;        if(auths.getAuth(joinRequest.authToken()) == null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: unauthorized&quot;);</b>
+&nbsp;        // Game does not exist
+<b class="fc">&nbsp;        if(games.getGame(joinRequest.gameID()) == null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: bad request&quot;);</b>
+&nbsp;        // If playerColor is empty, return. They are an observer
+<b class="fc">&nbsp;        if(joinRequest.color() == null)</b>
+&nbsp;            return;
+&nbsp;        // White is already taken
+<b class="fc">&nbsp;        if(joinRequest.color().equals(&quot;WHITE&quot;) &amp;&amp; games.getGame(joinRequest.gameID()).whiteUsername() != null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: already taken&quot;);</b>
+&nbsp;        // Black is already taken
+<b class="fc">&nbsp;        if(joinRequest.color().equals(&quot;BLACK&quot;) &amp;&amp; games.getGame(joinRequest.gameID()).blackUsername() != null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: already taken&quot;);</b>
+&nbsp;
+&nbsp;        // Update games based on playerColor
+<b class="fc">&nbsp;        games.updateGame(joinRequest.color(), auths.getAuth(joinRequest.authToken()).username(), joinRequest.gameID());</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public ArrayList&lt;GameData&gt; listGames(String authToken) throws DataAccessException {
+&nbsp;        // If not authorized, throw error
+<b class="fc">&nbsp;        if(auths.getAuth(authToken) == null)</b>
+<b class="fc">&nbsp;            throw new DataAccessException(&quot;Error: unauthorized&quot;);</b>
+&nbsp;        // Return games
+<b class="fc">&nbsp;        return games.getGames();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

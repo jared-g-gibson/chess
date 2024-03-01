@@ -1,0 +1,151 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RegisterHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">handler</a>
+</div>
+
+<h1>Coverage Summary for Class: RegisterHandler (handler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegisterHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package handler;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;import dataAccess.AuthDAO;
+&nbsp;import dataAccess.DataAccessException;
+&nbsp;import dataAccess.ErrorMessage;
+&nbsp;import dataAccess.UserDAO;
+&nbsp;import model.UserData;
+&nbsp;import response.RegisterResponse;
+&nbsp;import service.UserService;
+&nbsp;import spark.Request;
+&nbsp;import spark.Response;
+&nbsp;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;public class RegisterHandler extends Handler {
+&nbsp;
+&nbsp;    private AuthDAO auths;
+&nbsp;    private UserDAO users;
+&nbsp;
+<b class="fc">&nbsp;    public RegisterHandler(AuthDAO auths, UserDAO users) {</b>
+<b class="fc">&nbsp;        this.auths = auths;</b>
+<b class="fc">&nbsp;        this.users = users;</b>
+&nbsp;    }
+&nbsp;    public String handle(Request req, Response res) {
+&nbsp;        // Use gson to convert req.body to RegisterRequest
+&nbsp;        // Deserializes data from request
+<b class="fc">&nbsp;        var serializer = new Gson();</b>
+<b class="fc">&nbsp;        var userData = serializer.fromJson(req.body(), UserData.class);</b>
+&nbsp;
+&nbsp;        // Passes userData to register service for more processing
+<b class="fc">&nbsp;        UserService service = new UserService(auths, users);</b>
+<b class="fc">&nbsp;        String authToken = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            if(userData.username() == null || userData.email() == null || userData.password() == null)</b>
+<b class="fc">&nbsp;                throw new DataAccessException(&quot;Error: bad request&quot;);</b>
+<b class="fc">&nbsp;            authToken = service.register(userData);</b>
+<b class="fc">&nbsp;        } catch (DataAccessException e) {</b>
+<b class="fc">&nbsp;            return e.getException(res);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        // Serializes username and authtoken back in json
+<b class="fc">&nbsp;        RegisterResponse response = new RegisterResponse(null, authToken, userData.username());</b>
+<b class="fc">&nbsp;        res.status(200);</b>
+<b class="fc">&nbsp;        return serializer.toJson(response);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

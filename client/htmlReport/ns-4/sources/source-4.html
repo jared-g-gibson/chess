@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MemoryGameDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dataAccess</a>
+</div>
+
+<h1>Coverage Summary for Class: MemoryGameDAO (dataAccess)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MemoryGameDAO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dataAccess;
+&nbsp;
+&nbsp;import chess.ChessGame;
+&nbsp;import model.GameData;
+&nbsp;import model.UserData;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+<b class="fc">&nbsp;public class MemoryGameDAO implements GameDAO{</b>
+<b class="fc">&nbsp;    private static HashMap&lt;String, GameData&gt; games = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    public void createGame(GameData gameData) {
+<b class="fc">&nbsp;        games.put(Integer.toString(gameData.gameID()), gameData);</b>
+&nbsp;    }
+&nbsp;    public GameData getGame(String gameID) {
+<b class="fc">&nbsp;        return games.get(gameID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public GameData getGameFromGameName(String gameName) {
+<b class="fc">&nbsp;        for(HashMap.Entry&lt;String, GameData&gt; entry : games.entrySet()) {</b>
+<b class="fc">&nbsp;            GameData value = entry.getValue();</b>
+<b class="fc">&nbsp;            if(gameName.equals(value.gameName()))</b>
+<b class="fc">&nbsp;                return value;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ArrayList&lt;GameData&gt; getGames() {
+<b class="fc">&nbsp;        ArrayList&lt;GameData&gt; gameList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for(HashMap.Entry&lt;String, GameData&gt; entry : games.entrySet()) {</b>
+<b class="fc">&nbsp;            GameData value = entry.getValue();</b>
+<b class="fc">&nbsp;            gameList.add(value);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return gameList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getNumGames() {
+<b class="fc">&nbsp;        return games.size();</b>
+&nbsp;    }
+&nbsp;    public void updateGame(String color, String username, String gameID) {
+<b class="fc">&nbsp;        if(color.equals(&quot;WHITE&quot;)) {</b>
+<b class="fc">&nbsp;            games.put(gameID, games.get(gameID).addWhiteUser(username));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        else if(color.equals(&quot;BLACK&quot;)) {</b>
+<b class="fc">&nbsp;            games.put(gameID, games.get(gameID).addBlackUser(username));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;    public void clear() {
+<b class="fc">&nbsp;        games.clear();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

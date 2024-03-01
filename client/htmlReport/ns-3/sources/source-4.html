@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PawnMovesCalculator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">chess.pieces</a>
+</div>
+
+<h1>Coverage Summary for Class: PawnMovesCalculator (chess.pieces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PawnMovesCalculator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package chess.pieces;
+&nbsp;
+&nbsp;import chess.*;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;
+&nbsp;public class PawnMovesCalculator implements PieceMovesCalculator {
+&nbsp;
+&nbsp;    private final ChessGame.TeamColor pieceColor;
+&nbsp;
+&nbsp;    HashSet&lt;ChessMove&gt; moves;
+&nbsp;
+<b class="nc">&nbsp;    public PawnMovesCalculator(ChessGame.TeamColor c) {</b>
+<b class="nc">&nbsp;        moves = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        pieceColor = c;</b>
+&nbsp;    }
+&nbsp;    /*
+&nbsp;     * Function that calculates all possible pawn moves and promotions
+&nbsp;     *  */
+&nbsp;    public HashSet&lt;ChessMove&gt; pieceMoves(ChessBoard board, ChessPosition myPosition) {
+<b class="nc">&nbsp;        int row = myPosition.getRow();</b>
+<b class="nc">&nbsp;        int col = myPosition.getColumn();</b>
+&nbsp;
+&nbsp;        // White Moves
+<b class="nc">&nbsp;        if(pieceColor == ChessGame.TeamColor.WHITE) {</b>
+<b class="nc">&nbsp;            if(row + 1 &lt; 9 &amp;&amp; board.getPiece(new ChessPosition(row + 1, col)) == null) {</b>
+&nbsp;                // Promotion moving normally
+<b class="nc">&nbsp;                if(row + 1 == 8) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                else {
+&nbsp;                    // Normal pawn move
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));</b>
+&nbsp;                    // Pawn moving forward 2 when not blocked when it is at starting position
+<b class="nc">&nbsp;                    if(row == 2 &amp;&amp; board.getPiece(new ChessPosition(row + 2, col)) == null) {</b>
+<b class="nc">&nbsp;                        moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            if(row + 1 &lt; 9 &amp;&amp; col + 1 &lt; 9 &amp;&amp; board.getPiece(new ChessPosition(row + 1, col + 1)) != null &amp;&amp; board.getPiece(new ChessPosition(row + 1, col + 1)).getTeamColor() != pieceColor) {</b>
+&nbsp;                // Capturing piece up and to the right (promotion)
+<b class="nc">&nbsp;                if(row + 1 == 8) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                // Capturing piece up and to the right (not promotion)
+&nbsp;                else
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col + 1), null));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(row + 1 &lt; 9 &amp;&amp; col - 1 &gt; 0 &amp;&amp; board.getPiece(new ChessPosition(row + 1, col - 1)) != null &amp;&amp; board.getPiece(new ChessPosition(row + 1, col - 1)).getTeamColor() != pieceColor) {</b>
+&nbsp;                // Capturing piece down and to the left (promotion)
+<b class="nc">&nbsp;                if(row + 1 == 8) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                // Capturing piece down and to the left (not promotion)
+&nbsp;                else
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col - 1), null));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // Black Moves
+&nbsp;        else {
+<b class="nc">&nbsp;            if(row - 1 &gt; 0 &amp;&amp; board.getPiece(new ChessPosition(row - 1, col)) == null) {</b>
+&nbsp;                // Promotion moving normally
+<b class="nc">&nbsp;                if(row - 1 == 1) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                else {
+&nbsp;                    // Normal pawn move
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col), null));</b>
+&nbsp;                    // Pawn moving forward 2 when not blocked when it is at starting position
+<b class="nc">&nbsp;                    if(row == 7 &amp;&amp; board.getPiece(new ChessPosition(row - 2, col)) == null) {</b>
+<b class="nc">&nbsp;                        moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col), null));</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            if(row - 1 &gt; 0 &amp;&amp; col + 1 &lt; 9 &amp;&amp; board.getPiece(new ChessPosition(row - 1, col + 1)) != null &amp;&amp; board.getPiece(new ChessPosition(row - 1, col + 1)).getTeamColor() != pieceColor) {</b>
+&nbsp;                // Capturing piece down and to the right (promotion)
+<b class="nc">&nbsp;                if(row - 1 == 1) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                // Capturing piece down and to the right (not promotion)
+&nbsp;                else
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), null));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(row - 1 &gt; 0 &amp;&amp; col - 1 &gt; 0 &amp;&amp; board.getPiece(new ChessPosition(row - 1, col - 1)) != null &amp;&amp; board.getPiece(new ChessPosition(row - 1, col - 1)).getTeamColor() != pieceColor) {</b>
+&nbsp;                // Capturing piece down and to the left (promotion)
+<b class="nc">&nbsp;                if(row - 1 == 1) {</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), ChessPiece.PieceType.QUEEN));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), ChessPiece.PieceType.ROOK));</b>
+&nbsp;                }
+&nbsp;                // Capturing piece down and to the left (not promotion)
+&nbsp;                else
+<b class="nc">&nbsp;                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col - 1), null));</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return moves;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

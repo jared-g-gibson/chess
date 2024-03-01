@@ -1,0 +1,254 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ChessBoard</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">chess</a>
+</div>
+
+<h1>Coverage Summary for Class: ChessBoard (chess)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChessBoard</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package chess;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;/**
+&nbsp; * A chessboard that can hold and rearrange chess pieces.
+&nbsp; * &lt;p&gt;
+&nbsp; * Note: You can add to this class, but you may not alter
+&nbsp; * signature of the existing methods.
+&nbsp; */
+&nbsp;public class ChessBoard {
+&nbsp;
+&nbsp;    private ChessPiece[][] board;
+&nbsp;
+<b class="nc">&nbsp;    public ChessBoard() {</b>
+<b class="nc">&nbsp;        board = new ChessPiece[8][8];</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public ChessBoard(ChessBoard copy) {</b>
+<b class="nc">&nbsp;        board = Arrays.copyOf(copy.board, copy.board.length);</b>
+&nbsp;        //this.board = copy.board;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a chess piece to the chessboard
+&nbsp;     *
+&nbsp;     * @param position where to add the piece to
+&nbsp;     * @param piece    the piece to add
+&nbsp;     */
+&nbsp;    public void addPiece(ChessPosition position, ChessPiece piece) {
+<b class="nc">&nbsp;        board[position.getRow() - 1][position.getColumn() - 1] = piece;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void removePiece(ChessPosition position) {
+<b class="nc">&nbsp;        if(getPiece(position) != null)</b>
+<b class="nc">&nbsp;            board[position.getRow() - 1][position.getColumn() - 1] = null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets a chess piece on the chessboard
+&nbsp;     *
+&nbsp;     * @param position The position to get the piece from
+&nbsp;     * @return Either the piece at the position, or null if no piece is at that
+&nbsp;     * position
+&nbsp;     */
+&nbsp;    public ChessPiece getPiece(ChessPosition position) {
+<b class="nc">&nbsp;        return board[position.getRow() - 1][position.getColumn() - 1];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Method used to find a piece
+&nbsp;    public ChessPosition findPiece(ChessPiece piece) {
+<b class="nc">&nbsp;        for(int x = 1; x &lt; 9; x++) {</b>
+<b class="nc">&nbsp;            for(int y = 1; y &lt; 9; y++) {</b>
+&nbsp;                // If there is a piece in a position, check the team color and
+&nbsp;                // piece type to see if it equals what we are looking for
+<b class="nc">&nbsp;                if(getPiece(new ChessPosition(x, y)) != null &amp;&amp; getPiece(new ChessPosition(x, y)).equals(piece))</b>
+&nbsp;                        //getPiece(new ChessPosition(x, y)).getTeamColor() == piece.getTeamColor() &amp;&amp;
+&nbsp;                        //getPiece(new ChessPosition(x, y)).getPieceType() == piece.getPieceType())
+<b class="nc">&nbsp;                    return new ChessPosition(x, y);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the board to the default starting board
+&nbsp;     * (How the game of chess normally starts)
+&nbsp;     */
+&nbsp;    public void resetBoard() {
+<b class="nc">&nbsp;        board = new ChessPiece[8][8];</b>
+&nbsp;
+&nbsp;        /*
+&nbsp;        *  White Pieces
+&nbsp;        * */
+&nbsp;
+&nbsp;        // New White Pawns
+<b class="nc">&nbsp;        for(int i = 1; i &lt; 9; i++) {</b>
+<b class="nc">&nbsp;            addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // New White Rooks
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));</b>
+&nbsp;
+&nbsp;        // New White Knights
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));</b>
+&nbsp;
+&nbsp;        // New White Bishops
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));</b>
+&nbsp;
+&nbsp;        // New White Queen
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));</b>
+&nbsp;
+&nbsp;        // New White King
+<b class="nc">&nbsp;        addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));</b>
+&nbsp;
+&nbsp;
+&nbsp;        /*
+&nbsp;         *  Black Pieces
+&nbsp;         * */
+&nbsp;
+&nbsp;        // New Black Pawns
+<b class="nc">&nbsp;        for(int x = 1; x &lt; 9; x++) {</b>
+<b class="nc">&nbsp;            addPiece(new ChessPosition(7, x), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // New Black Rooks
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));</b>
+&nbsp;
+&nbsp;        // New White Knights
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));</b>
+&nbsp;
+&nbsp;        // New White Bishops
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));</b>
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));</b>
+&nbsp;
+&nbsp;        // New White Queen
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));</b>
+&nbsp;
+&nbsp;        // New White King
+<b class="nc">&nbsp;        addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        String s = &quot;\n&quot;;</b>
+<b class="nc">&nbsp;        for(int i = 0; i &lt; 8; i++) {</b>
+<b class="nc">&nbsp;            for(int x = 0; x &lt; 8; x++) {</b>
+<b class="nc">&nbsp;                s = s + &quot;Row: &quot; + i + &quot; Column: &quot; + x + &quot;: &quot; + board[i][x] + &quot;\n&quot; ;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return s;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="nc">&nbsp;        if (this == o) return true;</b>
+<b class="nc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="nc">&nbsp;        ChessBoard that = (ChessBoard) o;</b>
+<b class="nc">&nbsp;        return Arrays.deepEquals(board, that.board);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="nc">&nbsp;        return Arrays.deepHashCode(board);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>

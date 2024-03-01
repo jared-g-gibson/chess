@@ -1,0 +1,157 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Server</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">server</a>
+</div>
+
+<h1>Coverage Summary for Class: Server (server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Server</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package server;
+&nbsp;
+&nbsp;import dataAccess.*;
+&nbsp;import handler.*;
+&nbsp;import spark.*;
+&nbsp;
+<b class="fc">&nbsp;public class Server {</b>
+&nbsp;
+&nbsp;    public int run(int desiredPort) {
+<b class="fc">&nbsp;        Spark.port(desiredPort);</b>
+&nbsp;
+<b class="fc">&nbsp;        Spark.staticFiles.location(&quot;web&quot;);</b>
+&nbsp;
+&nbsp;        // Data Access Objects
+<b class="fc">&nbsp;        UserDAO users = new MemoryUserDAO();</b>
+<b class="fc">&nbsp;        AuthDAO auths = new MemoryAuthDAO();</b>
+<b class="fc">&nbsp;        GameDAO games = new MemoryGameDAO();</b>
+&nbsp;
+&nbsp;
+&nbsp;        // Register your endpoints and handle exceptions here.
+&nbsp;        // Clear Endpoint
+<b class="fc">&nbsp;        DeleteHandler deleteHandler = new DeleteHandler(auths, games, users);</b>
+<b class="fc">&nbsp;        Spark.delete(&quot;/db&quot;, ((request, response) -&gt; deleteHandler.handle(request, response)));</b>
+&nbsp;        // Register Endpoint
+<b class="fc">&nbsp;        RegisterHandler registerHandler = new RegisterHandler(auths, users);</b>
+<b class="fc">&nbsp;        Spark.post(&quot;/user&quot;, (request, response) -&gt; registerHandler.handle(request, response));</b>
+&nbsp;        // Login Endpoint
+<b class="fc">&nbsp;        LoginHandler loginHandler = new LoginHandler(auths, users);</b>
+<b class="fc">&nbsp;        Spark.post(&quot;/session&quot;, (request, response) -&gt; loginHandler.handle(request, response));</b>
+&nbsp;        // Logout Endpoint
+<b class="fc">&nbsp;        LogoutHandler logoutHandler = new LogoutHandler(auths, users);</b>
+<b class="fc">&nbsp;        Spark.delete(&quot;/session&quot;, (request, response) -&gt; logoutHandler.handle(request, response));</b>
+&nbsp;        // Create Game Endpoint
+<b class="fc">&nbsp;        CreateGameHandler createGameHandler = new CreateGameHandler(auths, games);</b>
+<b class="fc">&nbsp;        Spark.post(&quot;/game&quot;, (request, response) -&gt; createGameHandler.handle(request, response));</b>
+&nbsp;        // Join Game
+<b class="fc">&nbsp;        JoinGameHandler joinGameHandler = new JoinGameHandler(auths, games);</b>
+<b class="fc">&nbsp;        Spark.put(&quot;/game&quot;, (request, response) -&gt; joinGameHandler.handle(request, response));</b>
+&nbsp;        // List Games
+<b class="fc">&nbsp;        ListGamesHandler listGamesHandler = new ListGamesHandler(auths, games);</b>
+<b class="fc">&nbsp;        Spark.get(&quot;/game&quot;, (request, response) -&gt; listGamesHandler.handle(request, response));</b>
+&nbsp;
+<b class="fc">&nbsp;        Spark.init();</b>
+&nbsp;
+<b class="fc">&nbsp;        Spark.awaitInitialization();</b>
+<b class="fc">&nbsp;        return Spark.port();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void stop() {
+<b class="fc">&nbsp;        Spark.stop();</b>
+<b class="fc">&nbsp;        Spark.awaitStop();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-02-26 15:47</div>
+</div>
+</body>
+</html>
