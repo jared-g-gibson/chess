@@ -12,9 +12,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Data Access Objects
-        UserDAO users = new MemoryUserDAO();
-        AuthDAO auths = new MemoryAuthDAO();
-        GameDAO games = new MemoryGameDAO();
+        UserDAO users = new SQLUserDAO();
+        AuthDAO auths = new SQLAuthDAO();
+        GameDAO games = new SQLGameDAO();
 
 
         // Register your endpoints and handle exceptions here.
