@@ -6,6 +6,7 @@ import dataAccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserDAOTests {
 
@@ -86,4 +87,62 @@ public class UserDAOTests {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void getUserPass() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+
+        // Password encoder
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            // Check username, password, and email
+            Assertions.assertTrue(encoder.matches("password", users.getUser("Joe").password()));
+            Assertions.assertEquals("Joe", users.getUser("Joe").username());
+            Assertions.assertEquals("joe@gmail.com", users.getUser("Joe").email());
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertEquals(new UserData("Joe", "password", "joe@gmail.com"), memoryUsers.getUser("Joe"));
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getUserFail() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+
+        // Password encoder
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            // Checks if no user is retreived if username does not exist
+            Assertions.assertNull(users.getUser("J"));
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertNull(memoryUsers.getUser("J"));
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
