@@ -7,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import request.LoginRequest;
 
 public class UserDAOTests {
 
@@ -128,7 +129,7 @@ public class UserDAOTests {
         try {
             // SQL
             users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
-            // Checks if no user is retreived if username does not exist
+            // Checks if no user is retrieved if username does not exist
             Assertions.assertNull(users.getUser("J"));
 
             // Memory
@@ -140,6 +141,62 @@ public class UserDAOTests {
             memoryUsers.clear();
         }
         catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void verifyUserPass() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertTrue(users.verifyUser(new LoginRequest("Joe", "password")));
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertTrue(memoryUsers.verifyUser(new LoginRequest("Joe", "password")));
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void verifyUserFail() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertTrue(users.verifyUser(new LoginRequest("Joe", "password")));
+            try {
+                users.verifyUser(new LoginRequest("Joe", "incorrectPassword"));
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: unauthorized", e.getMessage());
+            }
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertTrue(memoryUsers.verifyUser(new LoginRequest("Joe", "password")));
+            try {
+                users.verifyUser(new LoginRequest("Joe", "incorrectPassword"));
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: unauthorized", e.getMessage());
+            }
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+        }
+        catch (Exception e){
             throw new RuntimeException(e);
         }
     }

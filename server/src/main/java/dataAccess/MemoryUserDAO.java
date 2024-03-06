@@ -19,7 +19,7 @@ public class MemoryUserDAO implements UserDAO {
         return users.get(username);
     }
 
-    public void verifyUser(LoginRequest loginInfo) throws DataAccessException {
+    public boolean verifyUser(LoginRequest loginInfo) throws DataAccessException {
         // If username does not exist, throw error
         if(getUser(loginInfo.username()) == null)
             throw new DataAccessException("Error: unauthorized");
@@ -28,5 +28,7 @@ public class MemoryUserDAO implements UserDAO {
         if(!getUser(loginInfo.username()).username().equals(loginInfo.username()) ||
                 !getUser(loginInfo.username()).password().equals(loginInfo.password()))
             throw new DataAccessException("Error: unauthorized");
+
+        return true;
     }
 }

@@ -70,7 +70,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public void verifyUser(LoginRequest loginInfo) throws DataAccessException {
+    public boolean verifyUser(LoginRequest loginInfo) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
             UserData user = getUser(loginInfo.username());
 
@@ -86,6 +86,8 @@ public class SQLUserDAO implements UserDAO{
         catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
+
+        return true;
     }
 
     // Password encoder
