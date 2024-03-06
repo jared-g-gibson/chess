@@ -26,14 +26,9 @@ public class UserService {
         return authToken;
     }
     public String login(LoginRequest loginInfo) throws DataAccessException {
-        // If username does not exist, throw error
-        if(users.getUser(loginInfo.username()) == null)
-            throw new DataAccessException("Error: unauthorized");
 
-        // If usernames and passwords do not match, throw error
-        if(!users.getUser(loginInfo.username()).username().equals(loginInfo.username()) ||
-            !users.getUser(loginInfo.username()).password().equals(loginInfo.password()))
-            throw new DataAccessException("Error: unauthorized");
+        // Verify if User has correct credentials to login
+        users.verifyUser(loginInfo);
 
         // Create Auth Token from User
         return auths.createAuth(loginInfo.username());

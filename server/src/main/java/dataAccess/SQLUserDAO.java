@@ -2,6 +2,7 @@ package dataAccess;
 
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import request.LoginRequest;
 
 import javax.xml.crypto.Data;
 import java.util.Objects;
@@ -10,7 +11,7 @@ public class SQLUserDAO implements UserDAO{
 
     public SQLUserDAO() {
         try(var conn = DatabaseManager.getConnection()) {
-            var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS users(username VARCHAR(255), password VARCHAR(255), email VARCHAR(255));");
+            var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS users(username VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, PRIMARY KEY(username));");
             createTable.executeUpdate();
         }
         catch (Exception e) {
@@ -66,6 +67,25 @@ public class SQLUserDAO implements UserDAO{
         return new UserData(username, password, email);
     }
 
+    @Override
+    public void verifyUser(LoginRequest loginInfo) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()) {
+            UserData user = getUser(loginInfo.username());
+
+            // User does not exist
+            if(user == null)
+                throw new DataAccessException("Error: unauthorized");
+
+            // Incorrect password
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            if(!encoder.matches(loginInfo.password(), user.password()))
+                throw new DataAccessException("Error: unauthorized");
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
     // Password encoder
     private String encodeUserPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -76,12 +96,12 @@ public class SQLUserDAO implements UserDAO{
     }
 
     // Password decoder
-    boolean verifyUser(String username, String providedClearTextPassword) {
+    /* boolean verifyUser(String username, String providedClearTextPassword) {
         // read the previously hashed password from the database
         // var hashedPassword = readHashedPasswordFromDatabase(username);
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         // return encoder.matches(providedClearTextPassword, getUser(username).password());
         return true;
-    }
+    } */
 }

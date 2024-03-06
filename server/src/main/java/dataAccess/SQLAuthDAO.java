@@ -14,7 +14,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     public SQLAuthDAO() {
         try(var conn = DatabaseManager.getConnection()) {
-            var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS auths(authToken VARCHAR(255), username VARCHAR(255));");
+            var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS auths(authToken VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, PRIMARY KEY(authToken));");
             createTable.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -63,8 +63,15 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuth(String authToken) {
-
+    public void deleteAuth(String authToken) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()) {
+            var deleteAuthStatement = conn.prepareStatement("DELETE FROM auths WHERE authToken= ?;");
+            deleteAuthStatement.setString(1, authToken);
+            deleteAuthStatement.executeUpdate();
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
