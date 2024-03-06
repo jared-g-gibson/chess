@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 public class SQLGameDAO implements GameDAO{
 
-    // private int numGames;
-
     public SQLGameDAO() {
         try(var conn = DatabaseManager.getConnection()) {
             var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS games(gameID int AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255), game BLOB, PRIMARY KEY(gameID) );");
@@ -23,6 +21,8 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
+            if(getGameFromGameName(gameData.gameName()) != null)
+                throw new DataAccessException("Error: bad request");
             var createGameStatement = conn.prepareStatement("INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?);");
             createGameStatement.setString(1, gameData.whiteUsername());
             createGameStatement.setString(2, gameData.blackUsername());
@@ -30,7 +30,6 @@ public class SQLGameDAO implements GameDAO{
             var json = new Gson().toJson(gameData.game());
             createGameStatement.setString(4, json);
             createGameStatement.executeUpdate();
-            // numGames++;
         }
         catch (Exception e) {
             throw new DataAccessException(e.getMessage());
@@ -101,7 +100,10 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public void updateGame(String color, String username, String gameID) throws DataAccessException {
+        GameData game = getGame(gameID);
         if(color.equals("WHITE")) {
+            if(game.whiteUsername() != null)
+                throw new DataAccessException("Error: already taken");
             try(var conn = DatabaseManager.getConnection()) {
                 var updateGameStatement = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID = ?;");
                 updateGameStatement.setString(1, username);
@@ -113,6 +115,8 @@ public class SQLGameDAO implements GameDAO{
             }
         }
         else if(color.equals("BLACK")) {
+            if(game.blackUsername() != null)
+                throw new DataAccessException("Error: already taken");
             try(var conn = DatabaseManager.getConnection()) {
                 var updateGameStatement = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?;");
                 updateGameStatement.setString(1, username);

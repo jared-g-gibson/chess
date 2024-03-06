@@ -54,8 +54,8 @@ public class AuthDAOTests {
         }
     }
 
-    // TODO:
-    /*@Test
+    // TODO: Add same authToken twice
+    @Test
     public void createAuthFail() {
         try {
 
@@ -63,7 +63,7 @@ public class AuthDAOTests {
         catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-    }*/
+    }
 
     @Test
     public void getAuthPass() {

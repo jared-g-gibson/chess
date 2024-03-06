@@ -6,6 +6,8 @@ import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 public class GameDAOTests {
     @Test
     public void clearGames() {
@@ -31,4 +33,334 @@ public class GameDAOTests {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void createGamePass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNotNull(games.getGame("1"));
+
+            // Memory
+            memoryGames.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNotNull(memoryGames.getGame("1"));
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void createGameFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            try {
+                games.createGame(new GameData(2, "Jack", "Hazel", "My Game", new ChessGame()));
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: bad request", e.getMessage());
+            }
+            Assertions.assertEquals(1, games.getNumGames());
+
+            // Memory
+            memoryGames.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            try {
+                memoryGames.createGame(new GameData(2, "Jack", "Hazel", "My Game", new ChessGame()));
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: bad request", e.getMessage());
+            }
+            Assertions.assertEquals(1, memoryGames.getNumGames());
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getGamePass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNotNull(games.getGame("1"));
+
+            // Memory
+            memoryGames.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNotNull(memoryGames.getGame("1"));
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getGameFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNull(games.getGame("0"));
+
+            // Memory
+            memoryGames.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
+            Assertions.assertNull(memoryGames.getGame("0"));
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // TODO
+    @Test
+    public void getGamesPass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+
+        try {
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            memoryGames.createGame(new GameData(2, null, null, "My Game pt. 2", new ChessGame()));
+            // These games should be returned from the listGames method
+            ArrayList<GameData> memoryListOfGames = new ArrayList<>();
+            memoryListOfGames.add(new GameData(1, null, null, "My Game", memoryGames.getGame("1").game()));
+            memoryListOfGames.add(new GameData(2, null, null, "My Game pt. 2", memoryGames.getGame("2").game()));
+            // Check if ArrayList is equal to SQL list of Games
+            Assertions.assertEquals(memoryListOfGames, memoryGames.getGames());
+
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            games.createGame(new GameData(2, null, null, "My Game pt. 2", new ChessGame()));
+            // These games should be returned from the listGames method
+            ArrayList<GameData> listOfGames = new ArrayList<>();
+            listOfGames.add(new GameData(1, null, null, "My Game", games.getGame("1").game()));
+            listOfGames.add(new GameData(2, null, null, "My Game pt. 2", games.getGame("2").game()));
+
+            // Check if ArrayList is equal to SQL list of Games
+            ArrayList<GameData> sqlListOfGames = games.getGames();
+
+            // Check if Game Ids are the same
+            Assertions.assertEquals(listOfGames.getFirst().gameID(), sqlListOfGames.getFirst().gameID());
+            Assertions.assertEquals(listOfGames.get(1).gameID(), sqlListOfGames.get(1).gameID());
+
+            // Check if Game names are equal
+            Assertions.assertEquals(listOfGames.getFirst().gameName(), sqlListOfGames.getFirst().gameName());
+            Assertions.assertEquals(listOfGames.get(1).gameName(), sqlListOfGames.get(1).gameName());
+
+
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getGamesFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            ArrayList<GameData> sqlListOfGames = games.getGames();
+            Assertions.assertEquals(0, sqlListOfGames.size());
+
+            // Memory
+            ArrayList<GameData> memoryListOfGames = games.getGames();
+            Assertions.assertEquals(0, memoryListOfGames.size());
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getGameFromGameNamePass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertNotNull(games.getGameFromGameName("My Game"));
+
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertNotNull(memoryGames.getGameFromGameName("My Game"));
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getGameFromGameNameFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertNull(games.getGameFromGameName("Non Existent Game"));
+
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertNull(memoryGames.getGameFromGameName("Non Existent Game"));
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void updateGamePass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            games.updateGame("BLACK", "Joe", "1");
+            Assertions.assertEquals("Joe", games.getGameFromGameName("My Game").blackUsername());
+
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            memoryGames.updateGame("BLACK", "Joe", "1");
+            Assertions.assertEquals("Joe", memoryGames.getGameFromGameName("My Game").blackUsername());
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void updateGameFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+
+        try {
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            games.updateGame("BLACK", "Joe", "1");
+            Assertions.assertEquals("Joe", games.getGameFromGameName("My Game").blackUsername());
+            try {
+                games.updateGame("BLACK", "Jack", "1");
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: already taken", e.getMessage());
+            }
+
+
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            memoryGames.updateGame("BLACK", "Joe", "1");
+            Assertions.assertEquals("Joe", memoryGames.getGameFromGameName("My Game").blackUsername());
+            try {
+                memoryGames.updateGame("BLACK", "Jack", "1");
+            }
+            catch (Exception e) {
+                Assertions.assertEquals("Error: already taken", e.getMessage());
+            }
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getNumGamesPass() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            games.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertEquals(1, games.getNumGames());
+
+            // Memory
+            memoryGames.createGame(new GameData(1, null, null, "My Game", new ChessGame()));
+            Assertions.assertEquals(1, memoryGames.getNumGames());
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // TODO: run games at 0
+    @Test
+    public void getNumGamesFail() {
+        GameDAO games = new SQLGameDAO();
+        GameDAO memoryGames = new MemoryGameDAO();
+        try {
+            // SQL
+            Assertions.assertEquals(0, games.getNumGames());
+
+            // Memory
+            Assertions.assertEquals(0, memoryGames.getNumGames());
+
+            // Clear for next test
+            games.clear();
+            memoryGames.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
