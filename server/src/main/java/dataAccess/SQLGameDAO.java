@@ -4,18 +4,17 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class SQLGameDAO implements GameDAO{
 
-    private int numGames;
+    // private int numGames;
 
     public SQLGameDAO() {
         try(var conn = DatabaseManager.getConnection()) {
             var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS games(gameID int AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255), game BLOB, PRIMARY KEY(gameID) );");
             createTable.executeUpdate();
-            numGames = 0;
+            // numGames = 0;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -31,7 +30,7 @@ public class SQLGameDAO implements GameDAO{
             var json = new Gson().toJson(gameData.game());
             createGameStatement.setString(4, json);
             createGameStatement.executeUpdate();
-            numGames++;
+            // numGames++;
         }
         catch (Exception e) {
             throw new DataAccessException(e.getMessage());
@@ -42,12 +41,17 @@ public class SQLGameDAO implements GameDAO{
     public GameData getGame(String gameID) throws DataAccessException{
         int game = Integer.parseInt(gameID);
         try(var conn = DatabaseManager.getConnection()) {
-            var getGameStatement = conn.prepareStatement("SELECT gameID FROM games WHERE gameID = ?");
+            var getGameStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID = ?");
             getGameStatement.setInt(1, game);
             var response = getGameStatement.executeQuery();
-            var chessGame = new Gson().fromJson(response.getString("game"), ChessGame.class);
-            return new GameData(response.getInt("gameID"), response.getString("whiteUsername"),
-                    response.getString("blackUsername"), response.getString("gameName"), chessGame);
+            if(response.next()) {
+                var chessGame = new Gson().fromJson(response.getString("game"), ChessGame.class);
+                return new GameData(response.getInt("gameID"), response.getString("whiteUsername"),
+                        response.getString("blackUsername"), response.getString("gameName"), chessGame);
+            }
+            else
+                return null;
+
         }
         catch (Exception e) {
             throw new DataAccessException(e.getMessage());
@@ -80,13 +84,45 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData getGameFromGameName(String gameName) {
+    public GameData getGameFromGameName(String gameName) throws DataAccessException {
+        ArrayList<GameData> games;
+        try {
+            games = getGames();
+            for(GameData game : games) {
+                if(game.gameName().equals(gameName))
+                    return game;
+            }
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
         return null;
     }
 
     @Override
-    public void updateGame(String color, String username, String gameID) {
-
+    public void updateGame(String color, String username, String gameID) throws DataAccessException {
+        if(color.equals("WHITE")) {
+            try(var conn = DatabaseManager.getConnection()) {
+                var updateGameStatement = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID = ?;");
+                updateGameStatement.setString(1, username);
+                updateGameStatement.setInt(2, Integer.parseInt(gameID));
+                updateGameStatement.executeUpdate();
+            }
+            catch (Exception e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        }
+        else if(color.equals("BLACK")) {
+            try(var conn = DatabaseManager.getConnection()) {
+                var updateGameStatement = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?;");
+                updateGameStatement.setString(1, username);
+                updateGameStatement.setInt(2, Integer.parseInt(gameID));
+                updateGameStatement.executeUpdate();
+            }
+            catch (Exception e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -102,6 +138,16 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public int getNumGames() {
+        int numGames = 0;
+        try {
+            ArrayList<GameData> games = getGames();
+            for(GameData game : games) {
+                numGames++;
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return numGames;
     }
 }
