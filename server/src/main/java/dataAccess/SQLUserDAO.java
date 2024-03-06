@@ -94,14 +94,4 @@ public class SQLUserDAO implements UserDAO{
         // write the hashed password in database along with the user's other information
         // writeHashedPasswordToDatabase(username, hashedPassword);
     }
-
-    // Password decoder
-    /* boolean verifyUser(String username, String providedClearTextPassword) {
-        // read the previously hashed password from the database
-        // var hashedPassword = readHashedPasswordFromDatabase(username);
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        // return encoder.matches(providedClearTextPassword, getUser(username).password());
-        return true;
-    } */
 }

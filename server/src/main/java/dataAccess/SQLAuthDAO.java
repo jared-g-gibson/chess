@@ -3,14 +3,12 @@ package dataAccess;
 import model.AuthData;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO {
 
-    // private Connection conn;
 
     public SQLAuthDAO() {
         try(var conn = DatabaseManager.getConnection()) {

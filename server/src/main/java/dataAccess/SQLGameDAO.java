@@ -1,5 +1,6 @@
 package dataAccess;
 
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -16,8 +17,19 @@ public class SQLGameDAO implements GameDAO{
         }
     }
     @Override
-    public void createGame(GameData gameData) {
-
+    public void createGame(GameData gameData) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()) {
+            var createGameStatement = conn.prepareStatement("INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?);");
+            createGameStatement.setString(1, gameData.whiteUsername());
+            createGameStatement.setString(2, gameData.blackUsername());
+            createGameStatement.setString(3, gameData.gameName());
+            var json = new Gson().toJson(gameData.game());
+            createGameStatement.setString(4, json);
+            createGameStatement.executeUpdate();
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
