@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class UserDAOTests {
+
     @Test
     public void clearUsers() {
         UserDAO users = new SQLUserDAO();
@@ -24,6 +25,62 @@ public class UserDAOTests {
             Assertions.assertNotNull(memoryUsers.getUser("Joe"));
             memoryUsers.clear();
             Assertions.assertNull(memoryUsers.getUser("Joe"));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void createUserPass() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertNotNull(users.getUser("Joe"));
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            Assertions.assertNotNull(memoryUsers.getUser("Joe"));
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void createUserFail() {
+        UserDAO users = new SQLUserDAO();
+        UserDAO memoryUsers = new MemoryUserDAO();
+        try {
+            // SQL
+            users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            try {
+                users.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            }
+            catch(Exception e) {
+                Assertions.assertEquals( "Error: already taken", e.getMessage());
+            }
+
+            // Memory
+            memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            try {
+                memoryUsers.createUser(new UserData("Joe", "password", "joe@gmail.com"));
+            }
+            catch(Exception e) {
+                Assertions.assertEquals( "Error: already taken", e.getMessage());
+            }
+
+            // Clear for next test
+            users.clear();
+            memoryUsers.clear();
+
         }
         catch (Exception e) {
             throw new RuntimeException(e);
