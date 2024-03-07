@@ -10,6 +10,12 @@ import java.util.Objects;
 public class SQLUserDAO implements UserDAO{
 
     public SQLUserDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         try(var conn = DatabaseManager.getConnection()) {
             var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS users(username VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, PRIMARY KEY(username));");
             createTable.executeUpdate();

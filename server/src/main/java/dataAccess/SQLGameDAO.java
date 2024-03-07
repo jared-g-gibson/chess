@@ -9,6 +9,12 @@ import java.util.ArrayList;
 public class SQLGameDAO implements GameDAO{
 
     public SQLGameDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         try(var conn = DatabaseManager.getConnection()) {
             var createTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS games(gameID int AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255), game BLOB, PRIMARY KEY(gameID) );");
             createTable.executeUpdate();
