@@ -39,7 +39,7 @@ class GameServiceTest {
     }
 
     @Test
-    void createGameFail() {
+    void createGameFail() throws DataAccessException {
         // Create new Data Access Objects
         AuthDAO auths = new MemoryAuthDAO();
         GameDAO games = new MemoryGameDAO();

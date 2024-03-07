@@ -12,7 +12,9 @@ public class MemoryUserDAO implements UserDAO {
     public void clear() {
         users.clear();
     }
-    public void createUser(UserData data) {
+    public void createUser(UserData data) throws DataAccessException {
+        if(getUser(data.username()) != null)
+            throw new DataAccessException("Error: already taken");
         users.put(data.username(), data);
     }
     public UserData getUser(String username) {

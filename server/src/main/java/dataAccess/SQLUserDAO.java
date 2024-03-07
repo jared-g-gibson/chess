@@ -38,8 +38,10 @@ public class SQLUserDAO implements UserDAO{
             createUserStatement.setString(3, data.email());
             createUserStatement.executeUpdate();
         } catch (Exception e) {
-            if(e.getMessage().equals("Duplicate entry 'Joe' for key 'users.PRIMARY'"))
+            if(e.getMessage().length() > 13 && e.getMessage().substring(0, 15).equals("Duplicate entry"))
                 throw new DataAccessException("Error: already taken");
+            //if(e.getMessage().equals("Duplicate entry 'Joe' for key 'users.PRIMARY'"))
+                //throw new DataAccessException("Error: already taken");
             throw new DataAccessException(e.getMessage());
         }
     }

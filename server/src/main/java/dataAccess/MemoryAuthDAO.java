@@ -14,6 +14,7 @@ public class MemoryAuthDAO implements AuthDAO {
         auths.clear();
     }
     public String createAuth(String username) {
+
         String authToken = UUID.randomUUID().toString();
         AuthData data = new AuthData(authToken, username);
         auths.put(authToken, data);
@@ -22,7 +23,9 @@ public class MemoryAuthDAO implements AuthDAO {
     public AuthData getAuth(String authToken) {
         return auths.get(authToken);
     }
-    public void deleteAuth(String authToken) {
+    public void deleteAuth(String authToken) throws DataAccessException {
+        if(getAuth(authToken) == null)
+            throw new DataAccessException("Error: bad request");
         auths.remove(authToken);
     }
 }

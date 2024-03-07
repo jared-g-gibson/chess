@@ -3,6 +3,7 @@ package dataAccess;
 import model.AuthData;
 import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -21,17 +22,21 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public String createAuth(String username) {
+    public String createAuth(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         try(var conn = DatabaseManager.getConnection()) {
+            if(getAuth(authToken) != null && getAuth(authToken).authToken().equals(authToken))
+                throw new DataAccessException("Error: already taken");
             var createAuthToken = conn.prepareStatement("INSERT into auths(authToken, username) VALUES(?, ?);");
             createAuthToken.setString(1, authToken);
             if (username.matches("[a-zA-Z]+")) {
                 createAuthToken.setString(2, username);
                 createAuthToken.executeUpdate();
             }
+            else
+                throw new DataAccessException("Error: invalid username");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
         return authToken;
     }
@@ -63,6 +68,8 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
+            if(getAuth(authToken) == null)
+                throw new DataAccessException("Error: bad request");
             var deleteAuthStatement = conn.prepareStatement("DELETE FROM auths WHERE authToken= ?;");
             deleteAuthStatement.setString(1, authToken);
             deleteAuthStatement.executeUpdate();
