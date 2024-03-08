@@ -5,6 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.LoginRequest;
 
 import javax.xml.crypto.Data;
+import java.sql.ResultSet;
 import java.util.Objects;
 
 public class SQLUserDAO implements UserDAO{
@@ -39,10 +40,14 @@ public class SQLUserDAO implements UserDAO{
     public void createUser(UserData data) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
             var createUserStatement = conn.prepareStatement("INSERT into users(username, password, email) VALUES(?, ?, ?);");
-            createUserStatement.setString(1, data.username());
-            createUserStatement.setString(2, encodeUserPassword(data.password()));
-            createUserStatement.setString(3, data.email());
-            createUserStatement.executeUpdate();
+            if (data.username().matches("[a-zA-Z]+")) {
+                createUserStatement.setString(1, data.username());
+                createUserStatement.setString(2, encodeUserPassword(data.password()));
+                createUserStatement.setString(3, data.email());
+                createUserStatement.executeUpdate();
+            }
+            else
+                throw new DataAccessException("Error: invalid username");
         } catch (Exception e) {
             if(e.getMessage().length() > 13 && e.getMessage().substring(0, 15).equals("Duplicate entry"))
                 throw new DataAccessException("Error: already taken");
@@ -57,11 +62,15 @@ public class SQLUserDAO implements UserDAO{
         String password = null;
         String email = null;
         try(var conn = DatabaseManager.getConnection()) {
+            ResultSet response;
             // SQL Statement
-            var getUserStatement = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ?");
-            getUserStatement.setString(1, username);
-            var response = getUserStatement.executeQuery();
-
+            if (username.matches("[a-zA-Z]+")) {
+                var getUserStatement = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ?");
+                getUserStatement.setString(1, username);
+                response = getUserStatement.executeQuery();
+            }
+            else
+                return null;
             // Get the password and email from the response
             if(response.next()) {
                 password = response.getString("password");
