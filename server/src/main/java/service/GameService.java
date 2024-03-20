@@ -3,14 +3,10 @@ package service;
 import chess.ChessGame;
 import dataAccess.*;
 import model.GameData;
-import request.CreateGameRequest;
 import request.GameRequest;
 import request.JoinRequest;
-import request.ListGamesRequest;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameService {
     private AuthDAO auths;

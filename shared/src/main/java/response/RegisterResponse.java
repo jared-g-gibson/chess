@@ -1,7 +1,5 @@
 package response;
 
-import java.util.UUID;
-
 public class RegisterResponse extends Response {
     private String authToken;
     private String username;
@@ -10,5 +8,16 @@ public class RegisterResponse extends Response {
         super(message);
         this.authToken = authToken;
         this.username = username;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public String toString() {
+        return "authToken: " + this.authToken +
+                "\nusername: " + this.username;
     }
 }

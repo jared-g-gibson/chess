@@ -1,6 +1,5 @@
 package serviceTests;
 
-import chess.ChessGame;
 import dataAccess.*;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import request.GameRequest;
 import request.JoinRequest;
 import service.GameService;
-import spark.utils.Assert;
 
 import java.util.ArrayList;
 

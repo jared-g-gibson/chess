@@ -3,7 +3,6 @@ package response;
 import model.GameData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ListGamesResponse extends Response{
 

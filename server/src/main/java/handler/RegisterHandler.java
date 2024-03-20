@@ -3,15 +3,12 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.ErrorMessage;
 import dataAccess.UserDAO;
 import model.UserData;
 import response.RegisterResponse;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-
-import java.util.Objects;
 
 public class RegisterHandler extends Handler {
 

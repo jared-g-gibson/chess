@@ -4,9 +4,7 @@ import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.LoginRequest;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
-import java.util.Objects;
 
 public class SQLUserDAO implements UserDAO{
 

@@ -3,17 +3,14 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.ErrorMessage;
 import dataAccess.GameDAO;
 import model.GameData;
-import request.ListGamesRequest;
 import response.ListGamesResponse;
 import service.GameService;
 import spark.Request;
 import spark.Response;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ListGamesHandler extends Handler{
 

@@ -3,7 +3,6 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.ErrorMessage;
 import dataAccess.GameDAO;
 import request.JoinGameRequest;
 import request.JoinRequest;
