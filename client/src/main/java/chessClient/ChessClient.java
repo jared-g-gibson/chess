@@ -49,7 +49,7 @@ public class ChessClient {
                     case "logout" -> this.logoutUser(inputArray);
                     case "create" -> this.createGame(inputArray);
                     case "list" -> this.listGames();
-                    case "join" -> this.joinGame(inputArray);
+                    case "join", "observe" -> this.joinGame(inputArray);
                     case "quit" -> "quit";
                     default -> this.help();
                 };

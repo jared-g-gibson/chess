@@ -94,11 +94,21 @@ public class ServerFacade {
         http.connect();
 
         // Output Response
-        try(InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            LoginResponse response = new Gson().fromJson(inputStreamReader, LoginResponse.class);
-            //System.out.println(response);
-            return response;
+        if(http.getResponseCode() == 200) {
+            try(InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                LoginResponse response = new Gson().fromJson(inputStreamReader, LoginResponse.class);
+                //System.out.println(response);
+                return response;
+            }
+        }
+        else {
+            try(InputStream respBody = http.getErrorStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                LoginResponse response = new Gson().fromJson(inputStreamReader, LoginResponse.class);
+                //System.out.println(response);
+                return response;
+            }
         }
     }
 

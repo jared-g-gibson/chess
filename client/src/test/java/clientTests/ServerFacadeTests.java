@@ -1,14 +1,21 @@
 package clientTests;
 
+import chess.ChessGame;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import request.CreateGameRequest;
+import request.JoinRequest;
+import request.ListGamesRequest;
 import request.LoginRequest;
 import response.CreateGameResponse;
+import response.ListGamesResponse;
 import response.LoginResponse;
 import response.RegisterResponse;
 import server.Server;
 import server.ServerFacade;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,20 +71,65 @@ public class ServerFacadeTests {
     }
 
     @Test
+    public void logoutPass() throws Exception {
+
+    }
+
+    @Test
+    public void logoutFail() throws Exception {
+
+    }
+
+    @Test
     public void createGamePass() throws Exception {
-        RegisterResponse response = facade.registerUser(new UserData("player1", "password", null));
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
         // Created game successfully
         assertNull(gameResponse.getMessage());
     }
 
-    /*@Test
-    public void createGameFail() {
+    @Test
+    public void createGameFail() throws Exception {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", null));
-        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), "Wrong auth");
         // Created game successfully
         assertNull(gameResponse.getMessage());
-    }*/
+    }
+
+    @Test
+    public void listGamesPass() throws Exception {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        ListGamesResponse res = facade.listGames(new ListGamesRequest(response.getAuthToken()));
+        ArrayList<GameData> games = new ArrayList<>();
+        games.add(new GameData(1, null, null, "My Game", new ChessGame()));
+        games.add(new GameData(2, null, null, "My Game", new ChessGame()));
+        assertEquals(games, res.getGames());
+    }
+
+    @Test
+    public void listGamesFail() throws Exception {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        ListGamesResponse res = facade.listGames(new ListGamesRequest(response.getAuthToken()));
+        assertEquals(0, res.getGames().size());
+    }
+
+    @Test
+    public void joinGamePass() throws Exception {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        String message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "1"));
+        Assertions.assertEquals("joined game successfully", message);
+    }
+
+    @Test
+    public void joinGameFail() throws Exception {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        String message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "0"));
+        Assertions.assertEquals("joined game successfully", message);
+    }
 
 
     @Test
