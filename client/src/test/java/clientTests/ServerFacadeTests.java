@@ -4,14 +4,8 @@ import chess.ChessGame;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import request.CreateGameRequest;
-import request.JoinRequest;
-import request.ListGamesRequest;
-import request.LoginRequest;
-import response.CreateGameResponse;
-import response.ListGamesResponse;
-import response.LoginResponse;
-import response.RegisterResponse;
+import request.*;
+import response.*;
 import server.Server;
 import server.ServerFacade;
 
@@ -58,8 +52,12 @@ public class ServerFacadeTests {
 
     @Test
     public void loginPass() throws Exception {
-        facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
-        LoginResponse response = facade.loginUser(new LoginRequest("player1", "password"));
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        // You have to log out since registering automatically logs you in
+        facade.logoutUser(new LogoutRequest(response.getAuthToken()));
+
+        // Check if authToken is 36 characters long
+        facade.loginUser(new LoginRequest("player1", "password"));
         assertTrue(response.getAuthToken().length() == 36);
     }
 
@@ -72,12 +70,18 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutPass() throws Exception {
-
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        LogoutResponse logoutResponse = facade.logoutUser(new LogoutRequest(response.getAuthToken()));
+        // Logged out successfully
+        Assertions.assertNull(logoutResponse.getMessage());
     }
 
     @Test
     public void logoutFail() throws Exception {
-
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        LogoutResponse logoutResponse = facade.logoutUser(new LogoutRequest("Wrong authToken"));
+        // Logged out successfully
+        Assertions.assertEquals("Error: unauthorized", logoutResponse.getMessage());
     }
 
     @Test
