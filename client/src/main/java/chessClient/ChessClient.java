@@ -1,14 +1,14 @@
 package chessClient;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import model.UserData;
 import request.CreateGameRequest;
+import request.ListGamesRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
-import response.CreateGameResponse;
-import response.LoginResponse;
-import response.LogoutResponse;
-import response.RegisterResponse;
+import response.*;
 import server.ServerFacade;
 
 import java.io.InputStream;
@@ -51,6 +51,7 @@ public class ChessClient {
                 return switch(inputArray[0]) {
                     case "logout" -> this.logoutUser(inputArray);
                     case "create" -> this.createGame(inputArray);
+                    case "list" -> this.listGames();
                     case "quit" -> "quit";
                     default -> this.help();
                 };
@@ -153,6 +154,7 @@ public class ChessClient {
         return "logged out as " + this.username;
     }
 
+    // TODO: Change HTTP to allow duplicate names
     public String createGame(String[] inputArray) {
         CreateGameRequest request;
         CreateGameResponse response;
@@ -170,5 +172,23 @@ public class ChessClient {
             return e.getMessage();
         }
         return "created game: " + inputArray[1];
+    }
+
+    public String listGames() {
+        ListGamesRequest request = new ListGamesRequest(authToken);
+        ListGamesResponse response = null;
+        try {
+            response = server.listGames(request);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+        String games = "list of games:\n";
+        for(GameData game : response.getGames()) {
+            games += "Game Number " + game.gameID() + ": gameName: " + game.gameName() + " whiteUsername: " + game.whiteUsername() +
+                    " blackUsername: " + game.blackUsername() + "\n";
+        }
+        return games;
     }
 }

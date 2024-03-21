@@ -135,14 +135,14 @@ public class ServerFacade {
         }
     }
 
-    public ListGamesResponse listGames(ListGamesRequest req, String authToken) throws Exception {
+    public ListGamesResponse listGames(ListGamesRequest req) throws Exception {
         // Set up Connection
         URI uri = new URI(serverUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("GET");
 
         // Write out a header
-        http.addRequestProperty("authorization", authToken);
+        http.addRequestProperty("authorization", req.authToken());
 
         // Make Connection
         http.connect();
