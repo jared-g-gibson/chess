@@ -20,8 +20,11 @@ public class PreLoginREPL {
             String line = scanner.nextLine();
             try {
                 result = client.eval(line);
-                System.out.println(SET_TEXT_COLOR_BLUE + result);
-                if(result != null && result.startsWith("Logged in")) {
+                if(result.startsWith("ERROR"))
+                    System.out.println(SET_TEXT_COLOR_RED + result);
+                else
+                    System.out.println(SET_TEXT_COLOR_BLUE + result);
+                if(result.startsWith("Logged in")) {
                     PostLoginREPL post = new PostLoginREPL(client);
                     result = post.run();
                 }

@@ -56,7 +56,7 @@ public class GameDAOTests {
         // SQL
         games.createGame(new GameData(1, "Joe", "Ruby", "My Game", new ChessGame()));
         try {
-            games.createGame(new GameData(2, "Jack", "Hazel", "My Game", new ChessGame()));
+            games.createGame(new GameData(2, "Jack", "Hazel", null, new ChessGame()));
             Assertions.fail();
         }
         catch (Exception e) {

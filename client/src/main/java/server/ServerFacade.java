@@ -17,6 +17,10 @@ public class ServerFacade {
         this.serverUrl = url;
     }
 
+    public ServerFacade(int port) {
+        this.serverUrl = "http://localhost:" + port;
+    }
+
     public String register(UserData data) {
         var path = "/user";
         var method = "POST";
@@ -34,9 +38,9 @@ public class ServerFacade {
         http.setDoOutput(true);
 
         // Write out the body
-        var body = Map.of("username", data.username(), "password", data.password(), "email", data.email());
+        //var body = Map.of("username", data.username(), "password", data.password(), "email", data.email());
         try(var outputStream = http.getOutputStream()) {
-            var jsonBody = new Gson().toJson(body);
+            var jsonBody = new Gson().toJson(data);
             outputStream.write(jsonBody.getBytes());
         }
 
@@ -44,12 +48,30 @@ public class ServerFacade {
         http.connect();
 
         // Output Response
-        try(InputStream respBody = http.getInputStream()) {
+        /*try(InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             RegisterResponse response = new Gson().fromJson(inputStreamReader, RegisterResponse.class);
             //System.out.println(response);
             return response;
+        }*/
+
+        if(http.getResponseCode() == 200) {
+            try(InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                RegisterResponse response = new Gson().fromJson(inputStreamReader, RegisterResponse.class);
+                //System.out.println(response);
+                return response;
+            }
         }
+        else {
+            try(InputStream respBody = http.getErrorStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                RegisterResponse response = new Gson().fromJson(inputStreamReader, RegisterResponse.class);
+                //System.out.println(response);
+                return response;
+            }
+        }
+
     }
 
     public LoginResponse loginUser(LoginRequest req) throws Exception {
@@ -166,13 +188,13 @@ public class ServerFacade {
         http.setDoOutput(true);
 
         // Write out the body
-        Map<String, String> body;
+        /*Map<String, String> body;
         if(request.color() == null)
             body = Map.of("playerColor", null, "gameID", request.gameID());
         else
-            body = Map.of("playerColor", request.color(), "gameID", request.gameID());
+            body = Map.of("playerColor", request.color(), "gameID", request.gameID());*/
         try(var outputStream = http.getOutputStream()) {
-            var jsonBody = new Gson().toJson(body);
+            var jsonBody = new Gson().toJson(request);
             outputStream.write(jsonBody.getBytes());
         }
 
@@ -186,6 +208,18 @@ public class ServerFacade {
             //System.out.println(response);
             return "joined game successfully";
         }
+    }
+
+    public void clear() throws Exception {
+        // Set up Connection
+        URI uri = new URI(serverUrl + "/db");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("DELETE");
+
+        // Make Connection
+        http.connect();
+        if(http.getResponseCode() == 200)
+            System.out.println("Deleted database successfully");
     }
 
 }

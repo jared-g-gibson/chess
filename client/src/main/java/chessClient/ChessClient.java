@@ -94,10 +94,11 @@ public class ChessClient {
         UserData data;
         RegisterResponse response = null;
         switch(inputArray.length) {
-            case 2 -> data = new UserData(inputArray[1], null, null);
-            case 3 -> data = new UserData(inputArray[1], inputArray[2], null);
-            case 4 -> data = new UserData(inputArray[1], inputArray[2], inputArray[3]);
-            default -> data = new UserData(null, null, null);
+            // TODO: Make this an error
+            case 1, 2, 3 -> {
+                    return "ERROR: please provide a username, password, and email. See help for more info";
+            }
+            default -> data = new UserData(inputArray[1], inputArray[2], inputArray[3]);
         }
         try {
             response = server.registerUser(data);
@@ -118,16 +119,19 @@ public class ChessClient {
         LoginRequest request;
         LoginResponse response = null;
         switch(inputArray.length) {
-            case 2 -> request = new LoginRequest(inputArray[1], null);
-            case 3 -> request = new LoginRequest(inputArray[1], inputArray[2]);
-            default -> request = new LoginRequest(null, null);
+            case 1, 2 -> {
+                return "ERROR: please provide a username and password. See help for more details.";
+            }
+            default -> request = new LoginRequest(inputArray[1], inputArray[2]);
         }
         try {
             response = server.loginUser(request);
             loggedIn = true;
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
+            if(e.getMessage().startsWith("Server returned HTTP response code: 401"))
+                return "ERROR: incorrect login credentials. Please try again";
         }
         if(response != null) {
             this.username = response.getUsername();
@@ -152,7 +156,6 @@ public class ChessClient {
         return "logged out as " + this.username;
     }
 
-    // TODO: Change HTTP to allow duplicate names
     public String createGame(String[] inputArray) {
         CreateGameRequest request;
         CreateGameResponse response;

@@ -20,8 +20,8 @@ public class GameService {
         if(gameRequest.authToken() == null || gameRequest.gameName() == null)
             throw new DataAccessException("Error: bad request");
         // If game already exists, throw error
-        if(games.getGameFromGameName(gameRequest.gameName()) != null)
-            throw new DataAccessException("Error: bad request");
+        // if(games.getGameFromGameName(gameRequest.gameName()) != null)
+            // throw new DataAccessException("Error: bad request");
         // If not authorized, throw error
         if(auths.getAuth(gameRequest.authToken()) == null)
             throw new DataAccessException("Error: unauthorized");

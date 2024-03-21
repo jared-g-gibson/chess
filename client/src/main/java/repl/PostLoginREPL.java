@@ -25,6 +25,7 @@ public class PostLoginREPL {
                     break;
                 if(result.startsWith("joined game successfully")) {
                     GameplayUI gamePlay = new GameplayUI(client);
+                    gamePlay.run();
                 }
 
             }

@@ -27,7 +27,9 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
-            if(getGameFromGameName(gameData.gameName()) != null)
+            //if(getGameFromGameName(gameData.gameName()) != null)
+                //throw new DataAccessException("Error: bad request");
+            if(gameData.gameName() == null)
                 throw new DataAccessException("Error: bad request");
             var createGameStatement = conn.prepareStatement("INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?);");
             createGameStatement.setString(1, gameData.whiteUsername());
