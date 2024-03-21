@@ -35,12 +35,8 @@ public class SQLAuthDAO implements AuthDAO {
                 throw new DataAccessException("Error: already taken");
             var createAuthToken = conn.prepareStatement("INSERT into auths(authToken, username) VALUES(?, ?);");
             createAuthToken.setString(1, authToken);
-            if (username.matches("[a-zA-Z]+")) {
-                createAuthToken.setString(2, username);
-                createAuthToken.executeUpdate();
-            }
-            else
-                throw new DataAccessException("Error: invalid username");
+            createAuthToken.setString(2, username);
+            createAuthToken.executeUpdate();
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }

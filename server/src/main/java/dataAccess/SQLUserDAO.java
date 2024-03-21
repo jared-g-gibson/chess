@@ -38,14 +38,10 @@ public class SQLUserDAO implements UserDAO{
     public void createUser(UserData data) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
             var createUserStatement = conn.prepareStatement("INSERT into users(username, password, email) VALUES(?, ?, ?);");
-            if (data.username().matches("[a-zA-Z]+")) {
-                createUserStatement.setString(1, data.username());
-                createUserStatement.setString(2, encodeUserPassword(data.password()));
-                createUserStatement.setString(3, data.email());
-                createUserStatement.executeUpdate();
-            }
-            else
-                throw new DataAccessException("Error: invalid username");
+            createUserStatement.setString(1, data.username());
+            createUserStatement.setString(2, encodeUserPassword(data.password()));
+            createUserStatement.setString(3, data.email());
+            createUserStatement.executeUpdate();
         } catch (Exception e) {
             if(e.getMessage().length() > 13 && e.getMessage().substring(0, 15).equals("Duplicate entry"))
                 throw new DataAccessException("Error: already taken");

@@ -2,6 +2,10 @@ package clientTests;
 
 import model.UserData;
 import org.junit.jupiter.api.*;
+import request.CreateGameRequest;
+import request.LoginRequest;
+import response.CreateGameResponse;
+import response.LoginResponse;
 import response.RegisterResponse;
 import server.Server;
 import server.ServerFacade;
@@ -45,9 +49,35 @@ public class ServerFacadeTests {
         assertEquals("Error: bad request", response.getMessage());
     }
 
+    @Test
     public void loginPass() throws Exception {
-
+        facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        LoginResponse response = facade.loginUser(new LoginRequest("player1", "password"));
+        assertTrue(response.getAuthToken().length() == 36);
     }
+
+    @Test
+    public void loginFail() throws Exception {
+        facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
+        LoginResponse response = facade.loginUser(new LoginRequest("player1", "wrongPassword"));
+        assertEquals("Error: unauthorized", response.getMessage());
+    }
+
+    @Test
+    public void createGamePass() throws Exception {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", null));
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        // Created game successfully
+        assertNull(gameResponse.getMessage());
+    }
+
+    /*@Test
+    public void createGameFail() {
+        RegisterResponse response = facade.registerUser(new UserData("player1", "password", null));
+        CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
+        // Created game successfully
+        assertNull(gameResponse.getMessage());
+    }*/
 
 
     @Test
