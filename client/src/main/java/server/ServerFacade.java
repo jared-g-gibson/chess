@@ -2,11 +2,11 @@ package server;
 
 import com.google.gson.Gson;
 import model.UserData;
+import request.CreateGameRequest;
+import request.ListGamesRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
-import response.LoginResponse;
-import response.LogoutResponse;
-import response.RegisterResponse;
+import response.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -99,6 +99,58 @@ public class ServerFacade {
         try(InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             LogoutResponse response = new Gson().fromJson(inputStreamReader, LogoutResponse.class);
+            //System.out.println(response);
+            return response;
+        }
+    }
+
+    public CreateGameResponse createGame(CreateGameRequest req, String authToken) throws Exception {
+        // Set up Connection
+        URI uri = new URI(serverUrl + "/game");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("POST");
+
+        // Write out a header
+        http.addRequestProperty("authorization", authToken);
+
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+
+        // Write out the body
+        var body = Map.of("gameName", req.gameName());
+        try(var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(body);
+            outputStream.write(jsonBody.getBytes());
+        }
+
+        // Make Connection
+        http.connect();
+
+        // Output Response
+        try(InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            CreateGameResponse response = new Gson().fromJson(inputStreamReader, CreateGameResponse.class);
+            //System.out.println(response);
+            return response;
+        }
+    }
+
+    public ListGamesResponse listGames(ListGamesRequest req, String authToken) throws Exception {
+        // Set up Connection
+        URI uri = new URI(serverUrl + "/game");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("GET");
+
+        // Write out a header
+        http.addRequestProperty("authorization", authToken);
+
+        // Make Connection
+        http.connect();
+
+        // Output Response
+        try(InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
             //System.out.println(response);
             return response;
         }

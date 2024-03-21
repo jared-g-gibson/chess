@@ -2,8 +2,10 @@ package chessClient;
 
 import com.google.gson.Gson;
 import model.UserData;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
+import response.CreateGameResponse;
 import response.LoginResponse;
 import response.LogoutResponse;
 import response.RegisterResponse;
@@ -16,8 +18,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
-import static ui.EscapeSequences.SET_TEXT_COLOR_MAGENTA;
+import static ui.EscapeSequences.*;
 
 
 public class ChessClient {
@@ -49,6 +50,7 @@ public class ChessClient {
             else {
                 return switch(inputArray[0]) {
                     case "logout" -> this.logoutUser(inputArray);
+                    case "create" -> this.createGame(inputArray);
                     case "quit" -> "quit";
                     default -> this.help();
                 };
@@ -149,5 +151,24 @@ public class ChessClient {
             return "";
         }
         return "logged out as " + this.username;
+    }
+
+    public String createGame(String[] inputArray) {
+        CreateGameRequest request;
+        CreateGameResponse response;
+        if(inputArray.length == 2) {
+            request = new CreateGameRequest(inputArray[1]);
+        }
+        else {
+            // System.out.println(SET_TEXT_COLOR_RED + "Error: bad request");
+            return SET_TEXT_COLOR_RED + "Error: bad request";
+        }
+        try {
+            response = server.createGame(request, authToken);
+        }
+        catch (Exception e) {
+            return e.getMessage();
+        }
+        return "created game: " + inputArray[1];
     }
 }
