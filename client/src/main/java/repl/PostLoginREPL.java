@@ -23,6 +23,10 @@ public class PostLoginREPL {
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
                 if(result.startsWith("logged out"))
                     break;
+                if(result.startsWith("joined game successfully")) {
+                    GameplayUI gamePlay = new GameplayUI(client);
+                }
+
             }
             catch (Exception e){
                 System.out.println(e.getMessage());

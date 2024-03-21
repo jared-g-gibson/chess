@@ -2,10 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.UserData;
-import request.CreateGameRequest;
-import request.ListGamesRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
+import request.*;
 import response.*;
 
 import java.io.InputStream;
@@ -153,6 +150,41 @@ public class ServerFacade {
             ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
             //System.out.println(response);
             return response;
+        }
+    }
+
+    public String joinGame(JoinRequest request) throws Exception {
+        // Set up Connection
+        URI uri = new URI(serverUrl + "/game");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("PUT");
+
+        // Write out a header
+        http.addRequestProperty("authorization", request.authToken());
+
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+
+        // Write out the body
+        Map<String, String> body;
+        if(request.color() == null)
+            body = Map.of("playerColor", null, "gameID", request.gameID());
+        else
+            body = Map.of("playerColor", request.color(), "gameID", request.gameID());
+        try(var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(body);
+            outputStream.write(jsonBody.getBytes());
+        }
+
+        // Make Connection
+        http.connect();
+
+        // Output Response
+        try(InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
+            //System.out.println(response);
+            return "joined game successfully";
         }
     }
 

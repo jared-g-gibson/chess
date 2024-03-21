@@ -4,10 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
-import request.CreateGameRequest;
-import request.ListGamesRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
+import request.*;
 import response.*;
 import server.ServerFacade;
 
@@ -52,6 +49,7 @@ public class ChessClient {
                     case "logout" -> this.logoutUser(inputArray);
                     case "create" -> this.createGame(inputArray);
                     case "list" -> this.listGames();
+                    case "join" -> this.joinGame(inputArray);
                     case "quit" -> "quit";
                     default -> this.help();
                 };
@@ -190,5 +188,24 @@ public class ChessClient {
                     " blackUsername: " + game.blackUsername() + "\n";
         }
         return games;
+    }
+
+    public String joinGame(String[] inputArray) {
+        JoinRequest request;
+        String response;
+        switch(inputArray.length) {
+            case 2 -> request = new JoinRequest(authToken, null, inputArray[1]);
+            case 3 -> request = new JoinRequest(authToken, inputArray[2], inputArray[1]);
+            default -> request = new JoinRequest(authToken, null, null);
+        }
+        try {
+            response = server.joinGame(request);
+            loggedIn = true;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+        return response;
     }
 }
