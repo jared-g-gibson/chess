@@ -97,7 +97,8 @@ public class ServerFacadeTests {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", null));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), "Wrong auth");
         // Created game successfully
-        assertNull(gameResponse.getMessage());
+        assertNotNull(gameResponse.getMessage());
+        assertEquals("Error: unauthorized", gameResponse.getMessage());
     }
 
     @Test
@@ -123,16 +124,16 @@ public class ServerFacadeTests {
     public void joinGamePass() throws Exception {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
-        String message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "1"));
-        Assertions.assertEquals("joined game successfully", message);
+        Response message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "1"));
+        Assertions.assertNull(message);
     }
 
     @Test
     public void joinGameFail() throws Exception {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
-        String message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "0"));
-        Assertions.assertEquals("joined game successfully", message);
+        Response res = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "0"));
+        Assertions.assertEquals("Error: bad request", res.getMessage());
     }
 
 

@@ -196,19 +196,21 @@ public class ChessClient {
     public String joinGame(String[] inputArray) {
         JoinRequest request;
         String response;
+        Response res;
         switch(inputArray.length) {
             case 2 -> request = new JoinRequest(authToken, null, inputArray[1]);
             case 3 -> request = new JoinRequest(authToken, inputArray[2], inputArray[1]);
             default -> request = new JoinRequest(authToken, null, null);
         }
         try {
-            response = server.joinGame(request);
-            loggedIn = true;
+            res = server.joinGame(request);
+            if(res.getMessage() != null)
+                throw new Exception(res.getMessage());
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
             return "";
         }
-        return response;
+        return "joined game successfully";
     }
 }

@@ -159,11 +159,21 @@ public class ServerFacade {
         http.connect();
 
         // Output Response
-        try(InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            CreateGameResponse response = new Gson().fromJson(inputStreamReader, CreateGameResponse.class);
-            //System.out.println(response);
-            return response;
+        if(http.getResponseCode() == 200) {
+            try(InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                CreateGameResponse response = new Gson().fromJson(inputStreamReader, CreateGameResponse.class);
+                //System.out.println(response);
+                return response;
+            }
+        }
+        else {
+            try(InputStream respBody = http.getErrorStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                CreateGameResponse response = new Gson().fromJson(inputStreamReader, CreateGameResponse.class);
+                //System.out.println(response);
+                return response;
+            }
         }
     }
 
@@ -180,15 +190,25 @@ public class ServerFacade {
         http.connect();
 
         // Output Response
-        try(InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
-            //System.out.println(response);
-            return response;
+        if(http.getResponseCode() == 200) {
+            try(InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
+                //System.out.println(response);
+                return response;
+            }
+        }
+        else {
+            try(InputStream respBody = http.getErrorStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
+                //System.out.println(response);
+                return response;
+            }
         }
     }
 
-    public String joinGame(JoinRequest request) throws Exception {
+    public Response joinGame(JoinRequest request) throws Exception {
         // Set up Connection
         URI uri = new URI(serverUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -215,11 +235,21 @@ public class ServerFacade {
         http.connect();
 
         // Output Response
-        try(InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            ListGamesResponse response = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
-            //System.out.println(response);
-            return "joined game successfully";
+        if(http.getResponseCode() == 200) {
+            try(InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                Response response = new Gson().fromJson(inputStreamReader, Response.class);
+                //System.out.println(response);
+                return response;
+            }
+        }
+        else {
+            try(InputStream respBody = http.getErrorStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                Response response = new Gson().fromJson(inputStreamReader, Response.class);
+                //System.out.println(response);
+                return response;
+            }
         }
     }
 
