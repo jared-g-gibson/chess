@@ -21,7 +21,7 @@ public class PreLoginREPL {
             try {
                 result = client.eval(line);
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
-                if(result.substring(0, 9).equals("Logged in")) {
+                if(result != null && result.startsWith("Logged in")) {
                     PostLoginREPL post = new PostLoginREPL(client);
                     result = post.run();
                 }

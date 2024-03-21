@@ -2,6 +2,10 @@ package chessClient;
 
 import com.google.gson.Gson;
 import model.UserData;
+import request.LoginRequest;
+import request.LogoutRequest;
+import response.LoginResponse;
+import response.LogoutResponse;
 import response.RegisterResponse;
 import server.ServerFacade;
 
@@ -20,22 +24,35 @@ public class ChessClient {
     private final String url;
     private final ServerFacade server;
     private boolean loggedIn;
+    private String authToken;
+    private String username;
 
     public ChessClient(String myURL) {
         this.url = myURL;
         this.server = new ServerFacade(this.url);
         this.loggedIn = false;
+        this.authToken = null;
+        this.username = null;
     }
 
     public String eval(String input) {
         String[] inputArray = input.split(" ");
         try {
-            return switch(inputArray[0]) {
-                case "register" -> this.registerUser(inputArray);
-                case "login" -> this.loginUser(inputArray);
-                case "quit" -> "quit";
-                default -> this.help();
-            };
+            if(!loggedIn) {
+                return switch(inputArray[0]) {
+                    case "register" -> this.registerUser(inputArray);
+                    case "login" -> this.loginUser(inputArray);
+                    case "quit" -> "quit";
+                    default -> this.help();
+                };
+            }
+            else {
+                return switch(inputArray[0]) {
+                    case "logout" -> this.logoutUser(inputArray);
+                    case "quit" -> "quit";
+                    default -> this.help();
+                };
+            }
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -88,11 +105,49 @@ public class ChessClient {
             System.out.println(e.getMessage());
         }
         loggedIn = true;
-        return "Logged in as " + response.getUsername();
-    }
-
-    public String loginUser(String[] inputArray) {
+        if(response != null) {
+            this.username = response.getUsername();
+            this.authToken = response.getAuthToken();
+            return "Logged in as " + response.getUsername();
+        }
         return "";
     }
 
+    public String loginUser(String[] inputArray) {
+        LoginRequest request;
+        LoginResponse response = null;
+        switch(inputArray.length) {
+            case 2 -> request = new LoginRequest(inputArray[1], null);
+            case 3 -> request = new LoginRequest(inputArray[1], inputArray[2]);
+            default -> request = new LoginRequest(null, null);
+        }
+        try {
+            response = server.loginUser(request);
+            loggedIn = true;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        if(response != null) {
+            this.username = response.getUsername();
+            this.authToken = response.getAuthToken();
+            return "Logged in as " + response.getUsername();
+        }
+
+        return "";
+    }
+
+    public String logoutUser(String[] inputArray) {
+        LogoutRequest request = new LogoutRequest(authToken);
+        LogoutResponse response = null;
+        try {
+            response = server.logoutUser(request);
+            loggedIn = false;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+        return "logged out as " + this.username;
+    }
 }

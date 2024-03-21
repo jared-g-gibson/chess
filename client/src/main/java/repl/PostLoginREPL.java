@@ -21,6 +21,8 @@ public class PostLoginREPL {
             try {
                 result = client.eval(line);
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
+                if(result.startsWith("logged out"))
+                    break;
             }
             catch (Exception e){
                 System.out.println(e.getMessage());

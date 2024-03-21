@@ -8,4 +8,10 @@ public class LoginResponse extends Response {
         this.authToken = authToken;
         this.username = username;
     }
+    public String getUsername() {
+        return username;
+    }
+    public String getAuthToken() {
+        return authToken;
+    }
 }
