@@ -208,14 +208,14 @@ public class ServerFacade {
         }
     }
 
-    public Response joinGame(JoinRequest request) throws Exception {
+    public Response joinGame(JoinGameRequest request, String authToken) throws Exception {
         // Set up Connection
         URI uri = new URI(serverUrl + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("PUT");
 
         // Write out a header
-        http.addRequestProperty("authorization", request.authToken());
+        http.addRequestProperty("authorization", authToken);
 
         // Specify that we are going to write out data
         http.setDoOutput(true);
@@ -233,6 +233,8 @@ public class ServerFacade {
 
         // Make Connection
         http.connect();
+
+        // System.out.println("RESPONSE CODE: " + http.getResponseCode());
 
         // Output Response
         if(http.getResponseCode() == 200) {

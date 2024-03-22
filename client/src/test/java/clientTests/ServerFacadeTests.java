@@ -124,7 +124,7 @@ public class ServerFacadeTests {
     public void joinGamePass() throws Exception {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
-        Response message = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "1"));
+        Response message = facade.joinGame(new JoinGameRequest("Black", "1"), response.getAuthToken());
         Assertions.assertNull(message.getMessage());
     }
 
@@ -132,7 +132,7 @@ public class ServerFacadeTests {
     public void joinGameFail() throws Exception {
         RegisterResponse response = facade.registerUser(new UserData("player1", "password", "player1@gmail.com"));
         CreateGameResponse gameResponse = facade.createGame(new CreateGameRequest("New Game"), response.getAuthToken());
-        Response res = facade.joinGame(new JoinRequest(response.getAuthToken(), "Black", "0"));
+        Response res = facade.joinGame(new JoinGameRequest("Black", "0"), response.getAuthToken());
         Assertions.assertEquals("Error: bad request", res.getMessage());
     }
 

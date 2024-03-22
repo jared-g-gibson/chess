@@ -126,14 +126,16 @@ public class ChessClient {
         }
         try {
             response = server.loginUser(request);
-            loggedIn = true;
         }
         catch (Exception e) {
-            // System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
             if(e.getMessage().startsWith("Server returned HTTP response code: 401"))
                 return "ERROR: incorrect login credentials. Please try again";
         }
+        if(response.getMessage() != null && response.getMessage().equals("Error: unauthorized"))
+            return "ERROR: incorrect login credentials. Please try again";
         if(response != null) {
+            loggedIn = true;
             this.username = response.getUsername();
             this.authToken = response.getAuthToken();
             return "Logged in as " + response.getUsername();
@@ -187,28 +189,31 @@ public class ChessClient {
         }
         String games = "list of games:\n";
         for(GameData game : response.getGames()) {
-            games += "Game Number " + game.gameID() + ": gameName: " + game.gameName() + " whiteUsername: " + game.whiteUsername() +
-                    " blackUsername: " + game.blackUsername() + "\n";
+            games += "Game Number " + game.gameID() + ": gameName: " + game.gameName() +
+                    " whiteUsername: " + game.whiteUsername() + " blackUsername: " + game.blackUsername() + "\n";
         }
         return games;
     }
 
     public String joinGame(String[] inputArray) {
-        JoinRequest request;
+        JoinGameRequest request;
         String response;
         Response res;
         switch(inputArray.length) {
-            case 2 -> request = new JoinRequest(authToken, null, inputArray[1]);
-            case 3 -> request = new JoinRequest(authToken, inputArray[2], inputArray[1]);
-            default -> request = new JoinRequest(authToken, null, null);
+            case 2 -> request = new JoinGameRequest(null, inputArray[1]);
+            case 3 -> request = new JoinGameRequest(inputArray[2], inputArray[1]);
+            default -> request = new JoinGameRequest(null, null);
         }
         try {
-            res = server.joinGame(request);
+            res = server.joinGame(request, authToken);
             if(res.getMessage() != null)
                 throw new Exception(res.getMessage());
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            if(e.getMessage().equals("Error: bad request"))
+                System.out.print(SET_TEXT_COLOR_RED + "Please enter a valid game");
+            if(e.getMessage().equals("Error: already taken"))
+                System.out.println(SET_TEXT_COLOR_RED + "Color is already taken. Please specify a different game or color.");
             return "";
         }
         return "joined game successfully";
