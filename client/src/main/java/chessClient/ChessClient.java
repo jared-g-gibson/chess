@@ -94,7 +94,6 @@ public class ChessClient {
         UserData data;
         RegisterResponse response = null;
         switch(inputArray.length) {
-            // TODO: Make this an error
             case 1, 2, 3 -> {
                     return "ERROR: please provide a username, password, and email. See help for more info";
             }
@@ -106,8 +105,16 @@ public class ChessClient {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        assert response != null;
+        if(response.getMessage() != null && response.getMessage().equals("Error: already taken")) {
+            return SET_TEXT_COLOR_RED + "Username is already taken";
+        }
+        else if(response.getMessage() != null){
+            return SET_TEXT_COLOR_RED + response.getMessage();
+        }
         loggedIn = true;
         if(response != null) {
+
             this.username = response.getUsername();
             this.authToken = response.getAuthToken();
             return "Logged in as " + response.getUsername();
@@ -132,6 +139,7 @@ public class ChessClient {
             if(e.getMessage().startsWith("Server returned HTTP response code: 401"))
                 return "ERROR: incorrect login credentials. Please try again";
         }
+        assert response != null;
         if(response.getMessage() != null && response.getMessage().equals("Error: unauthorized"))
             return "ERROR: incorrect login credentials. Please try again";
         if(response != null) {
