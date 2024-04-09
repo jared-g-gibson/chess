@@ -40,6 +40,10 @@ public class Server {
         ListGamesHandler listGamesHandler = new ListGamesHandler(auths, games);
         Spark.get("/game", (request, response) -> listGamesHandler.handle(request, response));
 
+        // WebSocket
+        WebSocketHandler webSocketHandler = new WebSocketHandler();
+        Spark.get("/connect", ((request, response) -> webSocketHandler.handle()));
+
         Spark.init();
 
         Spark.awaitInitialization();
