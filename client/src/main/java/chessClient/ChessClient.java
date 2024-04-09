@@ -226,4 +226,31 @@ public class ChessClient {
         }
         return "joined game successfully";
     }
+
+    public String evalGameplay(String line) {
+        String[] inputArray = line.split(" ");
+        return switch(inputArray[0]) {
+            case "help" -> this.helpGameplay();
+            case "leave" -> "leave";
+            case "resign" -> "resign";
+            case "quit" -> "quit";
+            case "redraw" -> "redraw";
+            default -> SET_TEXT_COLOR_RED + "ERROR: Use help for possible inputs";
+        };
+    }
+
+    public String helpGameplay() {
+        return SET_TEXT_COLOR_BLUE + "redraw" +
+                SET_TEXT_COLOR_MAGENTA + " - redraw current chess board\n" +
+                SET_TEXT_COLOR_BLUE + "leave" +
+                SET_TEXT_COLOR_MAGENTA + " - return to post-login\n" +
+                SET_TEXT_COLOR_BLUE + "move <current space> <space to move to>" +
+                SET_TEXT_COLOR_MAGENTA + " - moves piece at <current space> to <space to move to>\n" +
+                SET_TEXT_COLOR_BLUE + "resign" +
+                SET_TEXT_COLOR_MAGENTA + " - forefit the game and the game ends\n" +
+                SET_TEXT_COLOR_BLUE + "highlight <specific space>" +
+                SET_TEXT_COLOR_MAGENTA + " - highlights legal moves at a given <specific space>\n" +
+                SET_TEXT_COLOR_BLUE + "help" +
+                SET_TEXT_COLOR_MAGENTA + " - with possible commands";
+    }
 }

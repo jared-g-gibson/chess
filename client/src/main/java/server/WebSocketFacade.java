@@ -35,7 +35,15 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-        @Override
+    @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+    }
+
+    @Override
+    public void onError(Session session, Throwable th) {
     }
 }

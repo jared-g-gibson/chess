@@ -1,9 +1,13 @@
 package repl;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
 import chessClient.ChessClient;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
+import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
@@ -12,6 +16,9 @@ public class GameplayUI {
     private final ChessClient client;
     private static Random rand = new Random();
     private final String[] initialRow;
+
+    // Red is White Team
+    // Blue is Black Team
 
 
 
@@ -22,6 +29,22 @@ public class GameplayUI {
     }
 
     public void run() {
+        Scanner scanner = new Scanner(System.in);
+        var result = "";
+        while(!result.equals("leave") && !result.equals("resign")) {
+            printPrompt();
+            String line = scanner.nextLine();
+            try {
+                result = client.evalGameplay(line);
+                System.out.println(SET_TEXT_COLOR_BLUE + result);
+                if(result.equals("redraw")) {
+                    printBoard();
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
         printBoard();
     }
 
@@ -29,11 +52,15 @@ public class GameplayUI {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         System.out.println("The boards will be printed here");
         printHeaders();
-        printInitialWhiteBoard();
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        printWhiteBoard(board);
+        //printInitialWhiteBoard();
         printHeaders();
         System.out.println(SET_BG_COLOR_BLACK);
         printHeadersBackwards();
-        printInitialBlackBoard();
+        printBlackBoard(board);
+        //printInitialBlackBoard();
         printHeadersBackwards();
     }
 
@@ -107,6 +134,76 @@ public class GameplayUI {
         }
     }
 
+    private void printWhiteBoard(ChessBoard board) {
+        int loopColor = 0;
+        for(int x = 8; x >= 1; x--) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+            for(int y = 1; y <= 8; y++) {
+                setColorsAndPrint(board, x, y, loopColor);
+                loopColor++;
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
+            loopColor++;
+        }
+    }
+
+    private void printBlackBoard(ChessBoard board) {
+        int loopColor = 0;
+        for(int x = 1; x <= 8; x++) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+            for(int y = 1; y <= 8; y++) {
+                setColorsAndPrint(board, x, y, loopColor);
+                loopColor++;
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
+            loopColor++;
+        }
+    }
+
+    private void setColorsAndPrint(ChessBoard board, int x, int y, int loopColor) {
+        // Gives alternating color cool look
+        if(loopColor % 2 == 0)
+            System.out.print(SET_BG_COLOR_WHITE);
+        else
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+
+        // Decides color to print
+        if(board.getPiece(new ChessPosition(x, y)) != null && board.getPiece(new ChessPosition(x, y)).getTeamColor().equals(ChessGame.TeamColor.WHITE))
+            System.out.print(SET_TEXT_COLOR_RED);
+        else
+            System.out.print(SET_TEXT_COLOR_BLUE);
+
+        // Print piece
+        printPiece(board, new ChessPosition(x, y));
+    }
+
+    public void printPiece(ChessBoard board, ChessPosition position) {
+        if(board.getPiece(position) == null) {
+            System.out.print("     ");
+            return;
+        }
+        switch(board.getPiece(position).getPieceType()) {
+            case KING:
+                System.out.print("  K  ");
+                break;
+            case QUEEN:
+                System.out.print("  Q  ");
+                break;
+            case BISHOP:
+                System.out.print("  B  ");
+                break;
+            case KNIGHT:
+                System.out.print("  N  ");
+                break;
+            case ROOK:
+                System.out.print("  R  ");
+                break;
+            case PAWN:
+                System.out.print("  P  ");
+                break;
+        }
+    }
+
     private void printHeadersBackwards() {
 
         System.out.print(SET_BG_COLOR_LIGHT_GREY + "     " + SET_TEXT_BOLD);
@@ -115,5 +212,11 @@ public class GameplayUI {
         }
         System.out.println("     " + SET_BG_COLOR_BLACK);
     }
+
+    public void printPrompt() {
+        System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + "\n[PLAYING_GAME] >>> " + SET_TEXT_COLOR_GREEN);
+    }
+
+
 
 }
