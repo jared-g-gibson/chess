@@ -6,9 +6,6 @@ import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
-import request.JoinRequest;
-import response.RegisterResponse;
-import service.GameService;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -17,7 +14,6 @@ import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 @WebSocket
 public class WebSocketHandler {
@@ -60,7 +56,7 @@ public class WebSocketHandler {
             }
         }
         System.out.printf("Received: %s", command.toString());
-        session.getRemote().sendString("WebSocket response: " + message);
+        // session.getRemote().sendString("WebSocket response: " + message);
     }
 
     public void joinPlayer(JoinPlayer joinPlayer, Session session) {
@@ -123,10 +119,12 @@ public class WebSocketHandler {
     public void onConnect(Session session) {}
 
     @OnWebSocketClose
-    public void onClose(Session session) {}
+    public void onClose(Session session) {}*/
 
     @OnWebSocketError
-    public void onError(Throwable throwable) {}*/
+    public void onError(Session session, Throwable throwable) {
+        // connections.removeSession(session);
+    }
 
 
 }

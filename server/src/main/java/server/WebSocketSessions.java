@@ -1,8 +1,8 @@
 package server;
 
-import javax.websocket.Session;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.jetty.websocket.api.Session;
 
 public class WebSocketSessions {
 

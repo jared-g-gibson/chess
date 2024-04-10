@@ -53,6 +53,15 @@ public class ConnectionManager {
         }
     }
 
+    public void removeSession(javax.websocket.Session session) {
+        for(ConcurrentHashMap.Entry<Integer, ConcurrentHashMap<String, Connection>> set : connections.entrySet()) {
+            for(ConcurrentHashMap.Entry<String, Connection> mySet : set.getValue().entrySet()) {
+                if(mySet.getValue().session.equals(session))
+                    connections.remove(set.getKey(), set.getValue());
+            }
+        }
+    }
+
     public ConcurrentHashMap<String, Connection> getSessionsForGame(int gameID) {
         return connections.get(gameID);
     }
