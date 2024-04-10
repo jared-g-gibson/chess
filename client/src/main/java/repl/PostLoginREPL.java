@@ -1,6 +1,7 @@
 package repl;
 
 import chessClient.ChessClient;
+import server.WebSocketFacade;
 
 import java.util.Scanner;
 

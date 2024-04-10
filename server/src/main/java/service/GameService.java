@@ -62,4 +62,8 @@ public class GameService {
         // Return games
         return games.getGames();
     }
+
+    public void joinPlayer() {
+
+    }
 }

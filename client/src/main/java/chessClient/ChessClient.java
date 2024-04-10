@@ -33,6 +33,10 @@ public class ChessClient {
         this.username = null;
     }
 
+    public String getURL() {
+        return url;
+    }
+
     public String eval(String input) {
         String[] inputArray = input.split(" ");
         try {

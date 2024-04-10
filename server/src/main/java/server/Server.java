@@ -18,6 +18,9 @@ public class Server {
 
 
         // Register your endpoints and handle exceptions here.
+        // WebSocket
+        WebSocketHandler webSocketHandler = new WebSocketHandler();
+        Spark.webSocket("/connect", WebSocketHandler.class);
         // Clear Endpoint
         DeleteHandler deleteHandler = new DeleteHandler(auths, games, users);
         Spark.delete("/db", ((request, response) -> deleteHandler.handle(request, response)));
@@ -39,10 +42,6 @@ public class Server {
         // List Games
         ListGamesHandler listGamesHandler = new ListGamesHandler(auths, games);
         Spark.get("/game", (request, response) -> listGamesHandler.handle(request, response));
-
-        // WebSocket
-        WebSocketHandler webSocketHandler = new WebSocketHandler();
-        Spark.get("/connect", ((request, response) -> webSocketHandler.handle()));
 
         Spark.init();
 

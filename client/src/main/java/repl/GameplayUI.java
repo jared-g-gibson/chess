@@ -4,6 +4,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
 import chessClient.ChessClient;
+import server.WebSocketFacade;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -11,21 +13,28 @@ import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GameplayUI {
+public class GameplayUI implements GameHandler{
     private final String[] headers;
     private final ChessClient client;
     private static Random rand = new Random();
     private final String[] initialRow;
 
+    private WebSocketFacade wsFacade;
+
     // Red is White Team
     // Blue is Black Team
-
-
 
     public GameplayUI(ChessClient client) {
         this.client = client;
         headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         initialRow = new String[]{"R", "N", "B", "Q", "K", "B", "N", "R"};
+        try {
+            this.wsFacade = new WebSocketFacade(client.getURL());
+            wsFacade.joinPlayer();
+        }
+        catch (Exception e) {
+            System.out.println("ERROR: Unable to establish websocket connection");
+        }
     }
 
     public void run() {
@@ -218,5 +227,13 @@ public class GameplayUI {
     }
 
 
+    @Override
+    public void updateGame(int game) {
 
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
 }
