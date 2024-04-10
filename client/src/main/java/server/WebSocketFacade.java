@@ -1,12 +1,8 @@
 package server;
 
-import com.google.gson.Gson;
 import exception.ResponseException;
 import repl.GameHandler;
-import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.ServerMessage;
-
-import javax.management.Notification;
 import javax.websocket.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,8 +50,14 @@ public class WebSocketFacade extends Endpoint {
     public void onError(Session session, Throwable th) {
     }
 
-    public void joinPlayer() {
-
+    public void joinPlayer(String json) throws ResponseException {
+        try {
+            this.send(json);
+        }
+        catch (Exception e) {
+            System.out.println("In Facade");
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     public void send(String msg) throws Exception {

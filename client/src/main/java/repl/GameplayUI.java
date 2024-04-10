@@ -4,7 +4,10 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
 import chessClient.ChessClient;
+import com.google.gson.Gson;
+import exception.ResponseException;
 import server.WebSocketFacade;
+import webSocketMessages.userCommands.JoinPlayer;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +22,8 @@ public class GameplayUI implements GameHandler{
     private static Random rand = new Random();
     private final String[] initialRow;
 
+    private String authToken;
+
     private WebSocketFacade wsFacade;
 
     // Red is White Team
@@ -26,14 +31,15 @@ public class GameplayUI implements GameHandler{
 
     public GameplayUI(ChessClient client) {
         this.client = client;
+        this.authToken = client.getAuthToken();
         headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         initialRow = new String[]{"R", "N", "B", "Q", "K", "B", "N", "R"};
         try {
             this.wsFacade = new WebSocketFacade(client.getURL());
-            wsFacade.joinPlayer();
+            this.joinPlayer();
         }
         catch (Exception e) {
-            System.out.println("ERROR: Unable to establish websocket connection");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -224,6 +230,17 @@ public class GameplayUI implements GameHandler{
 
     public void printPrompt() {
         System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + "\n[PLAYING_GAME] >>> " + SET_TEXT_COLOR_GREEN);
+    }
+
+    public void joinPlayer() throws ResponseException {
+        JoinPlayer player = new JoinPlayer(client.getAuthToken(), client.getJoinedGame(), client.getPlayerColor());
+        var json = new Gson().toJson(player);
+        try {
+            wsFacade.joinPlayer(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
 

@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
@@ -23,6 +24,9 @@ public class ChessClient {
     private final ServerFacade server;
     private boolean loggedIn;
     private String authToken;
+    private int joinedGame;
+
+    private ChessGame.TeamColor playerColor;
     private String username;
 
     public ChessClient(String myURL) {
@@ -35,6 +39,26 @@ public class ChessClient {
 
     public String getURL() {
         return url;
+    }
+
+    public void setJoinedGame(int joinedGame) {
+        this.joinedGame = joinedGame;
+    }
+
+    public int getJoinedGame() {
+        return joinedGame;
+    }
+
+    public void setPlayerColor(ChessGame.TeamColor playerColor) {
+        this.playerColor = playerColor;
+    }
+
+    public ChessGame.TeamColor getPlayerColor() {
+        return playerColor;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 
     public String eval(String input) {
@@ -212,9 +236,21 @@ public class ChessClient {
         String response;
         Response res;
         switch(inputArray.length) {
-            case 2 -> request = new JoinGameRequest(null, inputArray[1]);
-            case 3 -> request = new JoinGameRequest(inputArray[2], inputArray[1]);
-            default -> request = new JoinGameRequest(null, null);
+            case 2 -> {
+                request = new JoinGameRequest(null, inputArray[1]);
+                this.playerColor = null;
+            }
+            case 3 -> {
+                request = new JoinGameRequest(inputArray[2], inputArray[1]);
+                if(Objects.equals(inputArray[2], "BLACK"))
+                    this.setPlayerColor(ChessGame.TeamColor.BLACK);
+                else
+                    this.setPlayerColor(ChessGame.TeamColor.WHITE);
+            }
+            default -> {
+                return SET_TEXT_COLOR_RED + "Error: Please follow the format specified in the help section.";
+            }
+            // default -> request = new JoinGameRequest(null, null);
         }
         try {
             res = server.joinGame(request, authToken);
@@ -228,6 +264,7 @@ public class ChessClient {
                 System.out.println(SET_TEXT_COLOR_RED + "Color is already taken. Please specify a different game or color.");
             return "";
         }
+        this.setJoinedGame(Integer.parseInt(inputArray[1]));
         return "joined game successfully";
     }
 
