@@ -2,10 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
+import request.JoinRequest;
+import service.GameService;
+import webSocketMessages.serverMessages.ErrorClass;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -43,9 +47,6 @@ public class WebSocketHandler {
             case JOIN_PLAYER -> {
                 JoinPlayer joinPlayer = new Gson().fromJson(message, JoinPlayer.class);
                 this.joinPlayer(joinPlayer, session);
-                LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
-                String res = new Gson().toJson(loadGame);
-                session.getRemote().sendString(res);
             }
             case JOIN_OBSERVER -> {
                 JoinObserver joinObserver = new Gson().fromJson(message, JoinObserver.class);
@@ -62,8 +63,29 @@ public class WebSocketHandler {
     public void joinPlayer(JoinPlayer joinPlayer, Session session) {
         // JoinRequest joinRequest = new JoinRequest( joinPlayer.getAuthString(), joinPlayer.getPlayerColor().toString(), Integer.toString(joinPlayer.getGameID()));
         try {
+            String username = null;
+            // Invalid authToken
+            if(joinPlayer.getAuthString() == null) {
+                ErrorClass error = new ErrorClass(ServerMessage.ServerMessageType.ERROR, "Error: Invalid authtoken");
+                String message = new Gson().toJson(error);
+                session.getRemote().sendString(message);
+                return;
+            }
+
+
+
             // Getting the username
-            String username = auths.getAuth(joinPlayer.getAuthString()).username();
+            try {
+                username = auths.getAuth(joinPlayer.getAuthString()).username();
+                if(username == null)
+                    throw new DataAccessException("Invalid authToken");
+            }
+            catch (Exception e){
+                ErrorClass error = new ErrorClass(ServerMessage.ServerMessageType.ERROR, "Error: Invalid authtoken");
+                String message = new Gson().toJson(error);
+                session.getRemote().sendString(message);
+                return;
+            }
 
             // Adding user to game using service
             // GameService service = new GameService(auths, games);
@@ -77,6 +99,9 @@ public class WebSocketHandler {
             // ConnectionManager broadcast = new ConnectionManager();
             connections.add(joinPlayer.getGameID(), joinPlayer.getAuthString(), session);
             connections.broadcast(joinPlayer.getGameID(), json, joinPlayer.getAuthString());
+            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
+            String res = new Gson().toJson(loadGame);
+            session.getRemote().sendString(res);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -122,9 +147,7 @@ public class WebSocketHandler {
     public void onClose(Session session) {}*/
 
     @OnWebSocketError
-    public void onError(Session session, Throwable throwable) {
-        // connections.removeSession(session);
-    }
+    public void onError(Session session, Throwable throwable) {}
 
 
 }
