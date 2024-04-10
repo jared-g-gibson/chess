@@ -4,16 +4,11 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+import repl.GameHandler;
 import request.*;
 import response.*;
 import server.ServerFacade;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.util.Map;
+import server.WebSocketFacade;
 import java.util.Objects;
 
 import static ui.EscapeSequences.*;
@@ -22,6 +17,8 @@ import static ui.EscapeSequences.*;
 public class ChessClient {
     private final String url;
     private final ServerFacade server;
+
+    private WebSocketFacade wsFacade;
     private boolean loggedIn;
     private String authToken;
     private int joinedGame;
@@ -29,12 +26,18 @@ public class ChessClient {
     private ChessGame.TeamColor playerColor;
     private String username;
 
-    public ChessClient(String myURL) {
+    public ChessClient(String myURL, GameHandler gameHandler) {
         this.url = myURL;
         this.server = new ServerFacade(this.url);
         this.loggedIn = false;
         this.authToken = null;
         this.username = null;
+        try {
+            this.wsFacade = new WebSocketFacade(this.getURL(), gameHandler);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public String getURL() {
@@ -47,6 +50,10 @@ public class ChessClient {
 
     public int getJoinedGame() {
         return joinedGame;
+    }
+
+    public WebSocketFacade getWsFacade() {
+        return wsFacade;
     }
 
     public void setPlayerColor(ChessGame.TeamColor playerColor) {
@@ -261,7 +268,7 @@ public class ChessClient {
             if(e.getMessage().equals("Error: bad request"))
                 System.out.print(SET_TEXT_COLOR_RED + "Please enter a valid game");
             if(e.getMessage().equals("Error: already taken"))
-                System.out.println(SET_TEXT_COLOR_RED + "Color is already taken. Please specify a different game or color.");
+                System.out.println(SET_TEXT_COLOR_RED + "Error: Color is already taken. Please specify a different game or color.");
             return "";
         }
         this.setJoinedGame(Integer.parseInt(inputArray[1]));

@@ -25,7 +25,7 @@ public class PostLoginREPL {
                 if(result.startsWith("logged out"))
                     break;
                 if(result.startsWith("joined game successfully")) {
-                    GameplayUI gamePlay = new GameplayUI(client);
+                    GameplayUI gamePlay = new GameplayUI(client, line);
                     gamePlay.run();
                 }
 

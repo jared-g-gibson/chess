@@ -7,6 +7,7 @@ import chessClient.ChessClient;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import server.WebSocketFacade;
+import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 
 import java.io.PrintStream;
@@ -16,7 +17,7 @@ import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GameplayUI implements GameHandler{
+public class GameplayUI {
     private final String[] headers;
     private final ChessClient client;
     private static Random rand = new Random();
@@ -24,23 +25,27 @@ public class GameplayUI implements GameHandler{
 
     private String authToken;
 
-    private WebSocketFacade wsFacade;
-
     // Red is White Team
     // Blue is Black Team
 
-    public GameplayUI(ChessClient client) {
+    public GameplayUI(ChessClient client, String line) {
         this.client = client;
         this.authToken = client.getAuthToken();
         headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         initialRow = new String[]{"R", "N", "B", "Q", "K", "B", "N", "R"};
         try {
-            this.wsFacade = new WebSocketFacade(client.getURL());
-            this.joinPlayer();
+            joinAsPlayerOrObserver(line);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void joinAsPlayerOrObserver(String line) throws Exception{
+        if(line.toLowerCase().startsWith("join") && line.split(" ").length == 3)
+            joinPlayer();
+        else
+            joinObserver();
     }
 
     public void run() {
@@ -236,21 +241,21 @@ public class GameplayUI implements GameHandler{
         JoinPlayer player = new JoinPlayer(client.getAuthToken(), client.getJoinedGame(), client.getPlayerColor());
         var json = new Gson().toJson(player);
         try {
-            wsFacade.joinPlayer(json);
+            client.getWsFacade().joinPlayer(json);
         }
         catch (Exception e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
 
-
-    @Override
-    public void updateGame(int game) {
-
-    }
-
-    @Override
-    public void printMessage(String message) {
-        System.out.println(message);
+    public void joinObserver() throws ResponseException {
+        JoinObserver observer = new JoinObserver(client.getAuthToken(), client.getJoinedGame());
+        var json = new Gson().toJson(observer);
+        try {
+            client.getWsFacade().joinObserver(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 }
