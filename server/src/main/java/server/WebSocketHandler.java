@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
@@ -72,8 +73,6 @@ public class WebSocketHandler {
                 return;
             }
 
-
-
             // Getting the username
             try {
                 username = auths.getAuth(joinPlayer.getAuthString()).username();
@@ -85,6 +84,20 @@ public class WebSocketHandler {
                 String message = new Gson().toJson(error);
                 session.getRemote().sendString(message);
                 return;
+            }
+
+            // Check if username matches (don't steal someone's invitation)
+            if(joinPlayer.getPlayerColor() == ChessGame.TeamColor.BLACK) {
+                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername())) {
+                    sendError(session, "Error: Username already taken");
+                    return;
+                }
+            }
+            else {
+                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
+                    sendError(session, "Error: Username already taken");
+                    return;
+                }
             }
 
             // Adding user to game using service
@@ -106,6 +119,12 @@ public class WebSocketHandler {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void sendError(Session session, String errorMessage) throws IOException {
+        ErrorClass error = new ErrorClass(ServerMessage.ServerMessageType.ERROR, errorMessage);
+        String message = new Gson().toJson(error);
+        session.getRemote().sendString(message);
     }
 
     public void joinObserver(JoinObserver joinObserver, Session session) {
