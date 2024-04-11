@@ -5,10 +5,7 @@ import chessClient.ChessClient;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import server.WebSocketFacade;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.Leave;
-import webSocketMessages.userCommands.MakeMove;
+import webSocketMessages.userCommands.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -51,20 +48,23 @@ public class GameplayUI {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("leave") && !result.equals("resign")) {
+        while(!result.equals("leave")) {
             printPrompt();
             String line = scanner.nextLine();
             try {
                 result = client.evalGameplay(line);
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
                 if(result.equals("redraw")) {
-                    printBoard();
+                    client.redrawBoard();
                 }
                 if(result.startsWith("move")) {
                     makeMove(result);
                 }
                 if(result.startsWith("leave")) {
                     leave();
+                }
+                if(result.startsWith("resign")) {
+                    resign();
                 }
             }
             catch (Exception e) {
@@ -268,6 +268,30 @@ public class GameplayUI {
     public void leave() throws ResponseException {
         Leave leave = new Leave(client.getAuthToken(), client.getJoinedGame());
         var json = new Gson().toJson(leave);
+        try {
+            client.getWsFacade().leave(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void resign() throws ResponseException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Are you sure you want to resign? You will forfeit the game. Enter y or n\n");
+        String line = scanner.nextLine();
+        switch (line) {
+            case "y" -> { }
+            case "n" -> {
+                return;
+            }
+            default -> {
+                System.out.println("Error: follow the format given");
+                this.resign();
+            }
+        }
+        Resign resign = new Resign(client.getAuthToken(), client.getJoinedGame());
+        var json = new Gson().toJson(resign);
         try {
             client.getWsFacade().leave(json);
         }

@@ -14,8 +14,19 @@ public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
 
+    private boolean gameOver;
+
     public ChessGame() {
         turn = TeamColor.WHITE;
+        gameOver = false;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver() {
+        gameOver = true;
     }
 
     /**
@@ -92,6 +103,8 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(gameOver)
+            throw new InvalidMoveException();
         // It's not the piece's turn, so throw InvalidMoveException
         if(board.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn())
             throw new InvalidMoveException();
@@ -181,6 +194,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         // According to our definition, a team is in checkmate if they are
         // unable to move and are in check
+        gameOver = true;
         return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 

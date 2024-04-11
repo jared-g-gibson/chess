@@ -71,6 +71,37 @@ public class WebSocketHandler {
     }
 
     private void makeMove(MakeMove makeMove, Session session) {
+        try {
+            String username;
+            // Getting the username
+            try {
+                username = auths.getAuth(makeMove.getAuthString()).username();
+                if(username == null)
+                    throw new DataAccessException("Invalid authToken");
+            }
+            catch (Exception e){
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
+
+            // Check if game is already over (you can't resign)
+            ChessGame game = games.getGame(Integer.toString(makeMove.getGameID())).game();
+            if(game.isGameOver()) {
+                sendError(session, "Error: Game is already over.");
+                return;
+            }
+
+            // Check if user is allowed to make moves (has to be a player)
+            if(!username.equals(games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername()) &&
+                    !username.equals(games.getGame(Integer.toString(makeMove.getGameID())).blackUsername())) {
+                sendError(session, "Error: Observer is not allowed to make moves.");
+                return;
+            }
+
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void leave(Leave leave, Session session) {
@@ -106,11 +137,52 @@ public class WebSocketHandler {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     private void resign(Resign resign, Session session) {
+        try {
+            String username;
+            // Getting the username
+            try {
+                username = auths.getAuth(resign.getAuthString()).username();
+                if(username == null)
+                    throw new DataAccessException("Invalid authToken");
+            }
+            catch (Exception e){
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
 
+            // Check if game is already over (you can't resign)
+            ChessGame game = games.getGame(Integer.toString(resign.getGameID())).game();
+            if(game.isGameOver()) {
+                sendError(session, "Error: Game is already over.");
+                return;
+            }
+
+            // Check if user is allowed to resign (has to be a player)
+            if(!username.equals(games.getGame(Integer.toString(resign.getGameID())).whiteUsername()) &&
+                    !username.equals(games.getGame(Integer.toString(resign.getGameID())).blackUsername())) {
+                sendError(session, "Error: Observer is not allowed to resign.");
+                return;
+            }
+
+            // Prepping to broadcast message to all clients connected to websocket
+            Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has resigned from the game");
+            var json = new Gson().toJson(message);
+
+            // Update game status to become no longer playable
+            game.setGameOver();
+            games.updateGameState(Integer.toString(resign.getGameID()), game);
+
+            // Broadcast message to clients and root client
+            session.getRemote().sendString(json);
+            connections.broadcast(resign.getGameID(), json, resign.getAuthString());
+            connections.removeSessionFromGame(resign.getGameID(), resign.getAuthString(), session);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void joinPlayer(JoinPlayer joinPlayer, Session session) {

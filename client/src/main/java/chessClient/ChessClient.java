@@ -317,6 +317,7 @@ public class ChessClient {
         String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         ChessBoard board = game.getBoard();
         if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
+            System.out.println();
             printHeaders(headers);
             // board.resetBoard();
             printWhiteBoard(board);
