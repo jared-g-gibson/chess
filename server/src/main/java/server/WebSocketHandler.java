@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
@@ -19,6 +21,8 @@ import webSocketMessages.userCommands.*;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @WebSocket
 public class WebSocketHandler {
@@ -98,10 +102,73 @@ public class WebSocketHandler {
                 return;
             }
 
+            // Check to see if it is correct player's turn
+            if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername()) && game.getTeamTurn() != ChessGame.TeamColor.WHITE) {
+                sendError(session, "Error: It is not your turn.");
+                return;
+            }
+            else if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).blackUsername()) && game.getTeamTurn() != ChessGame.TeamColor.BLACK) {
+                sendError(session, "Error: It is not your turn.");
+                return;
+            }
+
+            // Check to see if move is a valid move
+            if(!game.isValidMove(makeMove.getMove())) {
+                sendError(session, "Error: This move is not valid");
+                return;
+            }
+
+            // The move passes all of my checks
+            game.makeMove(makeMove.getMove());
+            games.updateGameState(Integer.toString(makeMove.getGameID()), game);
+
+            // Broadcast new board to everyone
+            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, games.getGame(Integer.toString(makeMove.getGameID())).game());
+            String json = new Gson().toJson(loadGame);
+            connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+            session.getRemote().sendString(json);
+
+            // Broadcast move description to everyone except root client
+            String startPos = getPosition(makeMove.getMove().getStartPosition());
+            String endPos = getPosition(makeMove.getMove().getEndPosition());
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " moved from " + startPos + " to " + endPos);
+            json = new Gson().toJson(notification);
+            connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private String getPosition(ChessPosition position) {
+        switch (position.getColumn()) {
+            case 1 -> {
+                return "a" + Integer.toString(position.getRow());
+            }
+            case 2 -> {
+                return "b" + Integer.toString(position.getRow());
+            }
+            case 3 -> {
+                return "c" + Integer.toString(position.getRow());
+            }
+            case 4 -> {
+                return "d" + Integer.toString(position.getRow());
+            }
+            case 5 -> {
+                return "e" + Integer.toString(position.getRow());
+            }
+            case 6 -> {
+                return "f" + Integer.toString(position.getRow());
+            }
+            case 7 -> {
+                return "g" + Integer.toString(position.getRow());
+            }
+            case 8 -> {
+                return "h" + Integer.toString(position.getRow());
+            }
+        }
+        return null;
     }
 
     private void leave(Leave leave, Session session) {

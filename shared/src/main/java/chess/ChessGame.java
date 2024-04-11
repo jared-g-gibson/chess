@@ -19,6 +19,8 @@ public class ChessGame {
     public ChessGame() {
         turn = TeamColor.WHITE;
         gameOver = false;
+        board = new ChessBoard();
+        board.resetBoard();
     }
 
     public boolean isGameOver() {
@@ -94,6 +96,17 @@ public class ChessGame {
 
         // Return the valid moves.
         return validMoves;
+    }
+
+    public boolean isValidMove(ChessMove makeMove) {
+        Collection<ChessMove> validMoves = validMoves(makeMove.getStartPosition());
+        if(validMoves == null)
+            return false;
+        for(var move : validMoves) {
+            if(move.equals(makeMove))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -219,6 +232,7 @@ public class ChessGame {
                 }
             }
         }
+        gameOver = true;
         return true;
     }
 
