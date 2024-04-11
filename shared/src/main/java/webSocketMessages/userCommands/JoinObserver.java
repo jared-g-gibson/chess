@@ -8,11 +8,6 @@ public class JoinObserver extends UserGameCommand {
         this.gameID = gameID;
         this.commandType = CommandType.JOIN_OBSERVER;
     }
-
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
-    }
-
     public int getGameID() {
         return gameID;
     }

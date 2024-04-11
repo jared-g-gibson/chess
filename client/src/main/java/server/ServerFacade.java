@@ -221,11 +221,6 @@ public class ServerFacade {
         http.setDoOutput(true);
 
         // Write out the body
-        /*Map<String, String> body;
-        if(request.color() == null)
-            body = Map.of("playerColor", null, "gameID", request.gameID());
-        else
-            body = Map.of("playerColor", request.color(), "gameID", request.gameID());*/
         try(var outputStream = http.getOutputStream()) {
             var jsonBody = new Gson().toJson(request);
             outputStream.write(jsonBody.getBytes());
