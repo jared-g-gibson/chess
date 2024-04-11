@@ -119,12 +119,12 @@ public class WebSocketHandler {
             String startPos = null;
             String endPos = null;
             if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername())) {
-                startPos = getWhitePosition(makeMove.getMove().getStartPosition());
-                endPos = getWhitePosition(makeMove.getMove().getEndPosition());
+                startPos = getPosition(makeMove.getMove().getStartPosition());
+                endPos = getPosition(makeMove.getMove().getEndPosition());
             }
             else if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).blackUsername())) {
-                startPos = getBlackPosition(makeMove.getMove().getStartPosition());
-                endPos = getBlackPosition(makeMove.getMove().getEndPosition());
+                startPos = getPosition(makeMove.getMove().getStartPosition());
+                endPos = getPosition(makeMove.getMove().getEndPosition());
             }
 
             Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " moved from " + startPos + " to " + endPos);
@@ -176,37 +176,7 @@ public class WebSocketHandler {
 
     }
 
-    private String getWhitePosition(ChessPosition position) {
-        switch (position.getColumn()) {
-            case 1 -> {
-                return "a" + Integer.toString(position.getRow());
-            }
-            case 2 -> {
-                return "b" + Integer.toString(position.getRow());
-            }
-            case 3 -> {
-                return "c" + Integer.toString(position.getRow());
-            }
-            case 4 -> {
-                return "d" + Integer.toString(position.getRow());
-            }
-            case 5 -> {
-                return "e" + Integer.toString(position.getRow());
-            }
-            case 6 -> {
-                return "f" + Integer.toString(position.getRow());
-            }
-            case 7 -> {
-                return "g" + Integer.toString(position.getRow());
-            }
-            case 8 -> {
-                return "h" + Integer.toString(position.getRow());
-            }
-        }
-        return null;
-    }
-
-    private String getBlackPosition(ChessPosition position) {
+    private String getPosition(ChessPosition position) {
         switch (position.getColumn()) {
             case 1 -> {
                 return "a" + Integer.toString(position.getRow());

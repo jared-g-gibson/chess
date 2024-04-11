@@ -200,12 +200,12 @@ public class GameplayUI {
         ChessPosition startPosition = null;
         ChessPosition endPosition = null;
         if(client.getPlayerColor() != null && client.getPlayerColor() == ChessGame.TeamColor.WHITE) {
-            startPosition = getPositionWhite(start);
-            endPosition = getPositionWhite(end);
+            startPosition = getPosition(start);
+            endPosition = getPosition(end);
         }
         else if(client.getPlayerColor() != null && client.getPlayerColor() == ChessGame.TeamColor.BLACK) {
-            startPosition = getPositionBlack(start);
-            endPosition = getPositionBlack(end);
+            startPosition = getPosition(start);
+            endPosition = getPosition(end);
         }
 
         if(startPosition == null) {
@@ -261,27 +261,7 @@ public class GameplayUI {
         return promotionPiece;
     }
 
-    private ChessPosition getPositionWhite(String start) {
-        int row = Integer.parseInt(start.substring(1));
-        int col;
-        switch (start.substring(0, 1)) {
-            case "a" -> col = 1;
-            case "b" -> col = 2;
-            case "c" -> col = 3;
-            case "d" -> col = 4;
-            case "e" -> col = 5;
-            case "f" -> col = 6;
-            case "g" -> col = 7;
-            case "h" -> col = 8;
-            default -> {
-                System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
-                return null;
-            }
-        }
-        return new ChessPosition(row, col);
-    }
-
-    private ChessPosition getPositionBlack(String start) {
+    private ChessPosition getPosition(String start) {
         int row = Integer.parseInt(start.substring(1));
         int col;
         switch (start.substring(0, 1)) {
