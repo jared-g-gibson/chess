@@ -26,10 +26,9 @@ public class ConnectionManager {
     }
 
     public void removeSessionFromGame(int gameID, String authToken, Session session) {
-        ConcurrentHashMap<String, Connection> map = new ConcurrentHashMap<>();
-        var connection = new Connection(authToken, session);
-        map.put(authToken, connection);
-        connections.remove(gameID, map);
+        ConcurrentHashMap<String, Connection> map = connections.get(gameID);
+        map.remove(authToken);
+        connections.put(gameID, map);
     }
 
 

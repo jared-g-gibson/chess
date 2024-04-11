@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import javax.xml.crypto.Data;
@@ -13,4 +14,6 @@ public interface GameDAO {
     public void updateGame(String color, String username, String gameID) throws DataAccessException;
     public void clear();
     public int getNumGames();
+
+    public void removePlayer(String gameID, ChessGame.TeamColor teamColor) throws DataAccessException;
 }

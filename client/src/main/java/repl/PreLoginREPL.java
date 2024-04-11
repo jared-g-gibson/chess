@@ -1,5 +1,7 @@
 package repl;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import chessClient.ChessClient;
 
 import java.util.Scanner;
@@ -40,8 +42,14 @@ public class PreLoginREPL implements GameHandler {
     }
 
     @Override
-    public void updateGame(int game) {
-
+    public void updateGame(ChessGame game) {
+        if(game.getBoard() == null) {
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            game.setBoard(board);
+        }
+        client.setGame(game);
+        client.redrawBoard();
     }
 
     @Override

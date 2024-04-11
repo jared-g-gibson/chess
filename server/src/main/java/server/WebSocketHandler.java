@@ -15,9 +15,7 @@ import webSocketMessages.serverMessages.ErrorClass;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
@@ -54,16 +52,74 @@ public class WebSocketHandler {
             case JOIN_OBSERVER -> {
                 JoinObserver joinObserver = new Gson().fromJson(message, JoinObserver.class);
                 this.joinObserver(joinObserver, session);
-                LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
+            }
+            case MAKE_MOVE -> {
+                MakeMove makeMove = new Gson().fromJson(message, MakeMove.class);
+                this.makeMove(makeMove, session);
+            }
+            case LEAVE -> {
+                Leave leave = new Gson().fromJson(message, Leave.class);
+                this.leave(leave, session);
+            }
+            case RESIGN -> {
+                Resign resign = new Gson().fromJson(message, Resign.class);
+                this.resign(resign, session);
             }
         }
         System.out.printf("Received: %s", command.toString());
         // session.getRemote().sendString("WebSocket response: " + message);
     }
 
-    public void joinPlayer(JoinPlayer joinPlayer, Session session) {
-        // JoinRequest joinRequest = new JoinRequest( joinPlayer.getAuthString(), joinPlayer.getPlayerColor().toString(), Integer.toString(joinPlayer.getGameID()));
+    private void makeMove(MakeMove makeMove, Session session) {
+    }
+
+    private void leave(Leave leave, Session session) {
         try {
+            String username;
+            // Getting the username
+            try {
+                username = auths.getAuth(leave.getAuthString()).username();
+                if(username == null)
+                    throw new DataAccessException("Invalid authToken");
+            }
+            catch (Exception e){
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
+
+            // Prepping to broadcast message to all clients connected to websocket
+            Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has left the game");
+            var json = new Gson().toJson(message);
+
+            // Remove from Database
+            if(username.equals(games.getGame(Integer.toString(leave.getGameID())).whiteUsername())) {
+                games.removePlayer(Integer.toString(leave.getGameID()), ChessGame.TeamColor.WHITE);
+            }
+            else if(username.equals(games.getGame(Integer.toString(leave.getGameID())).blackUsername())) {
+                games.removePlayer(Integer.toString(leave.getGameID()), ChessGame.TeamColor.BLACK);
+            }
+
+            // Broadcast message to clients
+            connections.broadcast(leave.getGameID(), json, leave.getAuthString());
+            connections.removeSessionFromGame(leave.getGameID(), leave.getAuthString(), session);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    private void resign(Resign resign, Session session) {
+
+    }
+
+    public void joinPlayer(JoinPlayer joinPlayer, Session session) {
+        try {
+            if(joinPlayer.getPlayerColor() == null) {
+                JoinObserver observer = new JoinObserver(joinPlayer.getAuthString(), joinPlayer.getGameID());
+                joinObserver(observer, session);
+                return;
+            }
             String username;
             // Invalid authToken
             if(joinPlayer.getAuthString() == null) {
@@ -95,39 +151,26 @@ public class WebSocketHandler {
 
             // Check if username matches (don't steal someone's invitation)
             if(joinPlayer.getPlayerColor() == ChessGame.TeamColor.BLACK) {
-                if(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername() != null && !username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername())) {
+                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername())) {
                     sendError(session, "Error: Username already taken");
-                    return;
-                }
-                else if(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername() == null && username != null) {
-                    sendError(session, "Error: Try joining game again.");
                     return;
                 }
             }
             else {
-                if(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername() != null && !username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
+                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
                     sendError(session, "Error: Username already taken");
                     return;
                 }
-                else if(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername() == null && username != null) {
-                    sendError(session, "Error: Try joining game again.");
-                    return;
-                }
             }
-
-            // Adding user to game using service
-            // GameService service = new GameService(auths, games);
-            // service.joinGame(joinRequest);
 
             // Prepping to broadcast message to all clients connected to websocket
             Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined the game as " + joinPlayer.getPlayerColor().toString());
             var json = new Gson().toJson(message);
 
             // Broadcast message to clients
-            // ConnectionManager broadcast = new ConnectionManager();
             connections.add(joinPlayer.getGameID(), joinPlayer.getAuthString(), session);
             connections.broadcast(joinPlayer.getGameID(), json, joinPlayer.getAuthString());
-            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
+            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, games.getGame(Integer.toString(joinPlayer.getGameID())).game());
             String res = new Gson().toJson(loadGame);
             session.getRemote().sendString(res);
         }
@@ -143,7 +186,6 @@ public class WebSocketHandler {
     }
 
     public void joinObserver(JoinObserver joinObserver, Session session) {
-        // JoinRequest joinRequest = new JoinRequest( joinPlayer.getAuthString(), joinPlayer.getPlayerColor().toString(), Integer.toString(joinPlayer.getGameID()));
         try {
             String username;
             // Invalid authToken
@@ -186,7 +228,7 @@ public class WebSocketHandler {
             // ConnectionManager broadcast = new ConnectionManager();
             connections.add(joinObserver.getGameID(), joinObserver.getAuthString(), session);
             connections.broadcast(joinObserver.getGameID(), json, joinObserver.getAuthString());
-            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
+            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, games.getGame(Integer.toString(joinObserver.getGameID())).game());
             String res = new Gson().toJson(loadGame);
             session.getRemote().sendString(res);
         }

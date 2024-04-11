@@ -5,6 +5,7 @@ import exception.ResponseException;
 import repl.GameHandler;
 import repl.GameplayUI;
 import webSocketMessages.serverMessages.ErrorClass;
+import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
@@ -34,7 +35,8 @@ public class WebSocketFacade extends Endpoint {
                     ServerMessage command = new Gson().fromJson(message, ServerMessage.class);
                     switch (command.getServerMessageType()) {
                         case LOAD_GAME -> {
-                            gameHandler.updateGame(1);
+                            LoadGame game = new Gson().fromJson(message, LoadGame.class);
+                            gameHandler.updateGame(game.getGame());
                         }
                         case NOTIFICATION -> {
                             Notification notificationCommand = new Gson().fromJson(message, Notification.class);
@@ -87,6 +89,35 @@ public class WebSocketFacade extends Endpoint {
             throw new ResponseException(500, e.getMessage());
         }
     }
+
+    public void makeMove(String json) throws ResponseException {
+        try {
+            this.send(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void leave(String json) throws ResponseException {
+        try {
+            this.send(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void reisgn(String json) throws ResponseException {
+        try {
+            this.send(json);
+        }
+        catch (Exception e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+
 
     public void send(String msg) throws Exception {
         this.session.getBasicRemote().sendText(msg);

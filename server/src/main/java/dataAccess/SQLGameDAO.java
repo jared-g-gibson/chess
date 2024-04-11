@@ -137,6 +137,45 @@ public class SQLGameDAO implements GameDAO{
         }
     }
 
+    public void updateGameState(String gameID, ChessGame updatedGame) throws DataAccessException {
+        GameData game = getGame(gameID);
+        try(var conn = DatabaseManager.getConnection()) {
+            var updateGameStatement = conn.prepareStatement("UPDATE games SET game = ? WHERE gameID = ?;");
+            String jsonGame = new Gson().toJson(updatedGame);
+            updateGameStatement.setString(1, jsonGame);
+            updateGameStatement.setInt(2, Integer.parseInt(gameID));
+            updateGameStatement.executeUpdate();
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    public void removePlayer(String gameID, ChessGame.TeamColor teamColor) throws DataAccessException{
+        if(teamColor == ChessGame.TeamColor.WHITE) {
+            try(var conn = DatabaseManager.getConnection()) {
+                var updateGameStatement = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID = ?;");
+                updateGameStatement.setString(1, null);
+                updateGameStatement.setInt(2, Integer.parseInt(gameID));
+                updateGameStatement.executeUpdate();
+            }
+            catch (Exception e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        }
+        else if(teamColor == ChessGame.TeamColor.BLACK) {
+            try(var conn = DatabaseManager.getConnection()) {
+                var updateGameStatement = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?;");
+                updateGameStatement.setString(1, null);
+                updateGameStatement.setInt(2, Integer.parseInt(gameID));
+                updateGameStatement.executeUpdate();
+            }
+            catch (Exception e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void clear() {
         try(var conn = DatabaseManager.getConnection()) {

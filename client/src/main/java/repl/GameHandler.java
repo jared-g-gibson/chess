@@ -1,6 +1,8 @@
 package repl;
 
+import chess.ChessGame;
+
 public interface GameHandler {
-    public void updateGame(int game);
+    public void updateGame(ChessGame game);
     public void printMessage(String message);
 }
