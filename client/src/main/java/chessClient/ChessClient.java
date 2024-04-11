@@ -3,7 +3,6 @@ package chessClient;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
-import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
 import repl.GameHandler;
@@ -268,7 +267,6 @@ public class ChessClient {
             default -> {
                 return SET_TEXT_COLOR_RED + "Error: Please follow the format specified in the help section.";
             }
-            // default -> request = new JoinGameRequest(null, null);
         }
         try {
             res = server.joinGame(request, authToken);
@@ -319,7 +317,6 @@ public class ChessClient {
         if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
             System.out.println();
             printHeaders(headers);
-            // board.resetBoard();
             printWhiteBoard(board);
             printHeaders(headers);
         }
@@ -327,15 +324,10 @@ public class ChessClient {
             System.out.println(SET_BG_COLOR_BLACK);
             printHeadersBackwards();
             printBlackBoard(board);
-            //printInitialBlackBoard();
             printHeadersBackwards();
         }
     }
     private void printHeaders(String[] headers) {
-        /*for(int x = 0; x < 40; x++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + " ");
-        }*/
-        // System.out.println(SET_BG_COLOR_BLACK);
         System.out.print(SET_BG_COLOR_LIGHT_GREY + "     " + SET_TEXT_BOLD);
         for (String header : headers) {
             System.out.print(SET_TEXT_COLOR_BLACK + "  " + header + "  ");

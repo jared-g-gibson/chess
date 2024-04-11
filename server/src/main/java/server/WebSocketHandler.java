@@ -1,7 +1,6 @@
 package server;
 
 import chess.ChessGame;
-import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
@@ -11,18 +10,12 @@ import dataAccess.UserDAO;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
-import request.JoinRequest;
-import service.GameService;
 import webSocketMessages.serverMessages.ErrorClass;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
-
-import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @WebSocket
 public class WebSocketHandler {
@@ -37,12 +30,6 @@ public class WebSocketHandler {
         this.games = games;
         this.users = users;
         connections = new ConnectionManager();
-    }
-
-
-
-    public String handle() {
-        return "";
     }
 
     @OnWebSocketMessage
@@ -374,14 +361,6 @@ public class WebSocketHandler {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public void sendMessage(int gameID, String message, String authToken) {
-
-    }
-
-    public void broadcastMessage(int gameID, String message, String exceptThisAuthToken) throws IOException {
-
     }
 
     /*@OnWebSocketConnect

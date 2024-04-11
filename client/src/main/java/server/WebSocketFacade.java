@@ -3,12 +3,10 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import repl.GameHandler;
-import repl.GameplayUI;
 import webSocketMessages.serverMessages.ErrorClass;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
 import java.net.URI;
@@ -108,7 +106,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void reisgn(String json) throws ResponseException {
+    public void resign(String json) throws ResponseException {
         try {
             this.send(json);
         }
@@ -117,17 +115,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-
-
     public void send(String msg) throws Exception {
         this.session.getBasicRemote().sendText(msg);
-    }
-
-    public void onMessage(ServerMessage message) {
-
-        // 1. Deserialize the message
-
-        // 2. Call the gameHandler
-
     }
 }

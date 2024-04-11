@@ -49,70 +49,8 @@ public class ConnectionManager {
             connections.remove(c.authToken);
         }
     }
-
-    public void removeSession(Session session) {
-        for(ConcurrentHashMap.Entry<Integer, ConcurrentHashMap<String, Connection>> set : connections.entrySet()) {
-            for(ConcurrentHashMap.Entry<String, Connection> mySet : set.getValue().entrySet()) {
-                if(mySet.getValue().session.equals(session))
-                    connections.remove(set.getKey(), set.getValue());
-            }
-        }
-    }
-
     public ConcurrentHashMap<String, Connection> getSessionsForGame(int gameID) {
         return connections.get(gameID);
     }
-
-    /*public final ConcurrentHashMap<Integer, ArrayList<ConcurrentHashMap<String, Connection>>> connections = new ConcurrentHashMap<>();
-
-    public void add(int gameID, String authToken, Session session) {
-        ConcurrentHashMap<String, Connection> map = new ConcurrentHashMap<>();
-        var connection = new Connection(authToken, session);
-        map.put(authToken, connection);
-        ArrayList<ConcurrentHashMap<String, Connection>> list = connections.get(gameID);
-        if(list == null) {
-            list = new ArrayList<>();
-            list.add(map);
-        }
-        else {
-            list.add(map);
-        }
-        connections.put(gameID, list);
-    }
-
-    public void removeSessionFromGame(int gameID, String authToken, Session session) {
-        ConcurrentHashMap<String, Connection> map = new ConcurrentHashMap<>();
-        var connection = new Connection(authToken, session);
-        map.put(authToken, connection);
-        connections.remove(gameID, map);
-    }
-
-
-
-    public void broadcast(int gameID, String message, String exceptThisAuthToken) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        ArrayList<ConcurrentHashMap<String, Connection>> listOfConnections = getSessionsForGame(gameID);
-        for(var l : listOfConnections) {
-            for (var c : l.values()) {
-                if (c.session.isOpen()) {
-                    if (!c.authToken.equals(exceptThisAuthToken)) {
-                        c.send(message);
-                    }
-                } else {
-                    removeList.add(c);
-                }
-            }
-        }
-
-
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.authToken);
-        }
-    }
-
-    public ArrayList<ConcurrentHashMap<String, Connection>> getSessionsForGame(int gameID) {
-        return connections.get(gameID);
-    }*/
 
 }
