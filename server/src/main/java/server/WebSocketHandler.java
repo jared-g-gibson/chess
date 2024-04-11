@@ -6,6 +6,7 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import request.JoinRequest;
@@ -18,6 +19,7 @@ import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 
 @WebSocket
@@ -67,9 +69,7 @@ public class WebSocketHandler {
             String username = null;
             // Invalid authToken
             if(joinPlayer.getAuthString() == null) {
-                ErrorClass error = new ErrorClass(ServerMessage.ServerMessageType.ERROR, "Error: Invalid authtoken");
-                String message = new Gson().toJson(error);
-                session.getRemote().sendString(message);
+                sendError(session, "Error: Invalid authToken");
                 return;
             }
 
@@ -80,21 +80,30 @@ public class WebSocketHandler {
                     throw new DataAccessException("Invalid authToken");
             }
             catch (Exception e){
-                ErrorClass error = new ErrorClass(ServerMessage.ServerMessageType.ERROR, "Error: Invalid authtoken");
-                String message = new Gson().toJson(error);
-                session.getRemote().sendString(message);
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
+
+            // Check if gameID is valid
+            try {
+                GameData game = games.getGame(Integer.toString(joinPlayer.getGameID()));
+                if(game == null)
+                    throw new DataAccessException("Error: invalid game");
+            }
+            catch (DataAccessException e){
+                sendError(session, "Error: Invalid game");
                 return;
             }
 
             // Check if username matches (don't steal someone's invitation)
             if(joinPlayer.getPlayerColor() == ChessGame.TeamColor.BLACK) {
-                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername())) {
+                if(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername() != null && !username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername())) {
                     sendError(session, "Error: Username already taken");
                     return;
                 }
             }
             else {
-                if(!username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
+                if(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername() != null && !username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
                     sendError(session, "Error: Username already taken");
                     return;
                 }
