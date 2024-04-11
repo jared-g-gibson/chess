@@ -101,10 +101,18 @@ public class WebSocketHandler {
                     sendError(session, "Error: Username already taken");
                     return;
                 }
+                else if(games.getGame(Integer.toString(joinPlayer.getGameID())).blackUsername() == null && username != null) {
+                    sendError(session, "Error: Try joining game again.");
+                    return;
+                }
             }
             else {
                 if(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername() != null && !username.equals(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername())) {
                     sendError(session, "Error: Username already taken");
+                    return;
+                }
+                else if(games.getGame(Integer.toString(joinPlayer.getGameID())).whiteUsername() == null && username != null) {
+                    sendError(session, "Error: Try joining game again.");
                     return;
                 }
             }
