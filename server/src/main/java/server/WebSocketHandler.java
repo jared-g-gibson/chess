@@ -116,11 +116,45 @@ public class WebSocketHandler {
             session.getRemote().sendString(json);
 
             // Broadcast move description to everyone except root client
-            String startPos = getPosition(makeMove.getMove().getStartPosition());
-            String endPos = getPosition(makeMove.getMove().getEndPosition());
+            String startPos = null;
+            String endPos = null;
+            if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername())) {
+                startPos = getWhitePosition(makeMove.getMove().getStartPosition());
+                endPos = getWhitePosition(makeMove.getMove().getEndPosition());
+            }
+            else if(username.equals(games.getGame(Integer.toString(makeMove.getGameID())).blackUsername())) {
+                startPos = getBlackPosition(makeMove.getMove().getStartPosition());
+                endPos = getBlackPosition(makeMove.getMove().getEndPosition());
+            }
+
             Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " moved from " + startPos + " to " + endPos);
             json = new Gson().toJson(notification);
             connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+
+            if(game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in checkmate. White wins");
+                sendGameOverNotification(notification, game, makeMove, session);
+                return;
+            }
+            if(game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in checkmate. Black wins");
+                sendGameOverNotification(notification, game, makeMove, session);
+                return;
+            }
+            if(game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in check");
+                sendGameOverNotification(notification, game, makeMove, session);
+                return;
+            }
+            if(game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in check");
+                sendGameOverNotification(notification, game, makeMove, session);
+                return;
+            }
+            if(game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate. It's a draw.");
+                sendGameOverNotification(notification, game, makeMove, session);
+            }
 
         }
         catch (Exception e) {
@@ -128,7 +162,51 @@ public class WebSocketHandler {
         }
     }
 
-    private String getPosition(ChessPosition position) {
+    private void sendGameOverNotification(Notification notification, ChessGame game, MakeMove makeMove, Session session) throws IOException, DataAccessException {
+        String json = new Gson().toJson(notification);
+        connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+        session.getRemote().sendString(json);
+
+        // Update game status to become no longer playable
+        game.setGameOver();
+        games.updateGameState(Integer.toString(makeMove.getGameID()), game);
+    }
+
+    private void setGameOver() {
+
+    }
+
+    private String getWhitePosition(ChessPosition position) {
+        switch (position.getColumn()) {
+            case 1 -> {
+                return "a" + Integer.toString(position.getRow());
+            }
+            case 2 -> {
+                return "b" + Integer.toString(position.getRow());
+            }
+            case 3 -> {
+                return "c" + Integer.toString(position.getRow());
+            }
+            case 4 -> {
+                return "d" + Integer.toString(position.getRow());
+            }
+            case 5 -> {
+                return "e" + Integer.toString(position.getRow());
+            }
+            case 6 -> {
+                return "f" + Integer.toString(position.getRow());
+            }
+            case 7 -> {
+                return "g" + Integer.toString(position.getRow());
+            }
+            case 8 -> {
+                return "h" + Integer.toString(position.getRow());
+            }
+        }
+        return null;
+    }
+
+    private String getBlackPosition(ChessPosition position) {
         switch (position.getColumn()) {
             case 1 -> {
                 return "a" + Integer.toString(position.getRow());

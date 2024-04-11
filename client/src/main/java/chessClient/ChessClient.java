@@ -2,6 +2,7 @@ package chessClient;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import model.GameData;
 import model.UserData;
@@ -10,6 +11,8 @@ import request.*;
 import response.*;
 import server.ServerFacade;
 import server.WebSocketFacade;
+
+import java.util.Collection;
 import java.util.Objects;
 
 import static ui.EscapeSequences.*;
@@ -292,6 +295,7 @@ public class ChessClient {
             case "resign" -> "resign";
             case "quit" -> "quit";
             case "redraw" -> "redraw";
+            case "move", "highlight" -> line;
             default -> SET_TEXT_COLOR_RED + "Error. Use help for possible inputs";
         };
     }
@@ -312,13 +316,13 @@ public class ChessClient {
     }
 
     public void redrawBoard() {
-        String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
+        // String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         ChessBoard board = game.getBoard();
         if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
             System.out.println();
-            printHeaders(headers);
+            printHeaders();
             printWhiteBoard(board);
-            printHeaders(headers);
+            printHeaders();
         }
         else {
             System.out.println(SET_BG_COLOR_BLACK);
@@ -327,7 +331,55 @@ public class ChessClient {
             printHeadersBackwards();
         }
     }
-    private void printHeaders(String[] headers) {
+
+    public void redrawBoard(Collection<ChessMove> validMoves) {
+        // String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
+        ChessBoard board = game.getBoard();
+        if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
+            printHighlightedWhiteBoard(board, validMoves);
+        }
+        else {
+            System.out.println(SET_BG_COLOR_BLACK);
+            printHeadersBackwards();
+            printHighlightedBlackBoard(board, validMoves);
+            printHeadersBackwards();
+        }
+    }
+
+    private void printHighlightedWhiteBoard(ChessBoard board, Collection<ChessMove> validMoves) {
+        System.out.println();
+        printHeaders();
+        // System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+        int loopColor = 0;
+        for(int x = 8; x >= 1; x--) {
+            // loopColor = printLine(x, loopColor, board);
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+            for(int y = 1; y <= 8; y++) {
+                setColorsAndPrintHighlights(board, x, y, loopColor, validMoves);
+                loopColor++;
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
+            loopColor++;
+        }
+        printHeaders();
+    }
+
+    private void printHighlightedBlackBoard(ChessBoard board, Collection<ChessMove> validMoves) {
+        int loopColor = 0;
+        for(int x = 1; x <= 8; x++) {
+            // loopColor = printLine(x, loopColor, board);
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+            for(int y = 8; y >= 1; y--) {
+                setColorsAndPrintHighlights(board, x, y, loopColor, validMoves);
+                loopColor++;
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
+            loopColor++;
+        }
+    }
+
+    private void printHeaders() {
+        String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         System.out.print(SET_BG_COLOR_LIGHT_GREY + "     " + SET_TEXT_BOLD);
         for (String header : headers) {
             System.out.print(SET_TEXT_COLOR_BLACK + "  " + header + "  ");
@@ -350,6 +402,32 @@ public class ChessClient {
             System.out.print(SET_BG_COLOR_WHITE);
         else
             System.out.print(SET_BG_COLOR_DARK_GREY);
+
+        // Decides color to print
+        if(board.getPiece(new ChessPosition(x, y)) != null && board.getPiece(new ChessPosition(x, y)).getTeamColor().equals(ChessGame.TeamColor.WHITE))
+            System.out.print(SET_TEXT_COLOR_RED);
+        else
+            System.out.print(SET_TEXT_COLOR_BLUE);
+
+        // Print piece
+        printPiece(board, new ChessPosition(x, y));
+    }
+
+    private void setColorsAndPrintHighlights(ChessBoard board, int x, int y, int loopColor, Collection<ChessMove> validMoves) {
+        // Gives alternating color cool look
+        if(loopColor % 2 == 0)
+            System.out.print(SET_BG_COLOR_WHITE);
+        else
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+
+        // If is a valid move, Set bg color to yellow
+        ChessPosition position = new ChessPosition(x, y);
+        for(var move : validMoves) {
+            if(move.getEndPosition().equals(position))
+                System.out.print(SET_BG_COLOR_YELLOW);
+            if(move.getStartPosition().equals(position))
+                System.out.print(SET_BG_COLOR_GREEN);
+        }
 
         // Decides color to print
         if(board.getPiece(new ChessPosition(x, y)) != null && board.getPiece(new ChessPosition(x, y)).getTeamColor().equals(ChessGame.TeamColor.WHITE))
@@ -400,7 +478,12 @@ public class ChessClient {
     private void printBlackBoard(ChessBoard board) {
         int loopColor = 0;
         for(int x = 1; x <= 8; x++) {
-            loopColor = printLine(x, loopColor, board);
+            // loopColor = printLine(x, loopColor, board);
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+            for(int y = 8; y >= 1; y--) {
+                setColorsAndPrint(board, x, y, loopColor);
+                loopColor++;
+            }
             System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
             loopColor++;
         }

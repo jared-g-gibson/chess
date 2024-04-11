@@ -9,6 +9,7 @@ import webSocketMessages.userCommands.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -56,6 +57,9 @@ public class GameplayUI {
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
                 if(result.equals("redraw")) {
                     client.redrawBoard();
+                }
+                if(result.startsWith("highlight")) {
+                    highlight(line);
                 }
                 if(result.startsWith("move")) {
                     makeMove(result);
@@ -135,8 +139,38 @@ public class GameplayUI {
         }
     }
 
+
+    public void highlight(String line) {
+        String[] commandArray = line.split(" ");
+        // Incorrect Formatting
+        if(commandArray.length < 2 || commandArray[1].length() < 2) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
+            return;
+        }
+
+        // Is valid position
+        String start = commandArray[1];
+        if(!(start.charAt(0) == 'a' || start.charAt(0) == 'b' || start.charAt(0) == 'c' || start.charAt(0) == 'd' ||
+                start.charAt(0) == 'e' || start.charAt(0) == 'f' || start.charAt(0) == 'g' || start.charAt(0) == 'h')) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
+            return;
+        }
+
+        // Get start and end positions from strings
+        // Example a2a3 -> StartPosition: (1,2) EndPosition: (1, 3)
+        ChessPosition startPosition = getPositionWhite(start);
+
+        // Collection of valid moves
+        Collection<ChessMove> validMoves = client.getGame().validMoves(startPosition);
+
+        // Redraw the board with valid moves highlighted
+        client.redrawBoard(validMoves);
+
+
+
+    }
+
     public void makeMove(String command) throws ResponseException {
-        command = command.toLowerCase();
         String[] commandArray = command.split(" ");
 
         // Incorrect Formatting
@@ -150,21 +184,30 @@ public class GameplayUI {
         String end = commandArray[1].substring(2);
 
         // Check if move is valid syntax
-        if(start.charAt(0) != 'a' || start.charAt(0) != 'b' || start.charAt(0) != 'c' || start.charAt(0) != 'd' ||
-                start.charAt(0) != 'e' || start.charAt(0) != 'f' || start.charAt(0) != 'g' || start.charAt(0) != 'h') {
+        if(!(start.charAt(0) == 'a' || start.charAt(0) == 'b' || start.charAt(0) == 'c' || start.charAt(0) == 'd' ||
+                start.charAt(0) == 'e' || start.charAt(0) == 'f' || start.charAt(0) == 'g' || start.charAt(0) == 'h')) {
                 System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
                 return;
         }
-        if(end.charAt(0) != 'a' || end.charAt(0) != 'b' || end.charAt(0) != 'c' || end.charAt(0) != 'd' ||
-                end.charAt(0) != 'e' || end.charAt(0) != 'f' || end.charAt(0) != 'g' || end.charAt(0) != 'h') {
+        if(!(end.charAt(0) != 'a' || end.charAt(0) != 'b' || end.charAt(0) != 'c' || end.charAt(0) != 'd' ||
+                end.charAt(0) != 'e' || end.charAt(0) != 'f' || end.charAt(0) != 'g' || end.charAt(0) != 'h')) {
             System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
             return;
         }
 
         // Get start and end positions from strings
         // Example a2a3 -> StartPosition: (1,2) EndPosition: (1, 3)
-        ChessPosition startPosition = getPosition(start);
-        ChessPosition endPosition = getPosition(end);
+        ChessPosition startPosition = null;
+        ChessPosition endPosition = null;
+        if(client.getPlayerColor() != null && client.getPlayerColor() == ChessGame.TeamColor.WHITE) {
+            startPosition = getPositionWhite(start);
+            endPosition = getPositionWhite(end);
+        }
+        else if(client.getPlayerColor() != null && client.getPlayerColor() == ChessGame.TeamColor.BLACK) {
+            startPosition = getPositionBlack(start);
+            endPosition = getPositionBlack(end);
+        }
+
         if(startPosition == null) {
             System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
             return;
@@ -176,10 +219,10 @@ public class GameplayUI {
 
         // Get Pawn Promotion Piece
         ChessPiece.PieceType promotionPiece = null;
-        if(client.getGame().getBoard().getPiece(endPosition).getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 8 && client.getPlayerColor() == ChessGame.TeamColor.WHITE) {
+        if(client.getGame().getBoard().getPiece(startPosition).getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 8 && client.getPlayerColor() == ChessGame.TeamColor.WHITE) {
             promotionPiece = promotionPieceType();
         }
-        if(client.getGame().getBoard().getPiece(endPosition).getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 1 && client.getPlayerColor() == ChessGame.TeamColor.BLACK) {
+        if(client.getGame().getBoard().getPiece(startPosition).getPieceType() == ChessPiece.PieceType.PAWN && endPosition.getRow() == 1 && client.getPlayerColor() == ChessGame.TeamColor.BLACK) {
             promotionPiece = promotionPieceType();
         }
 
@@ -218,7 +261,27 @@ public class GameplayUI {
         return promotionPiece;
     }
 
-    private ChessPosition getPosition(String start) {
+    private ChessPosition getPositionWhite(String start) {
+        int row = Integer.parseInt(start.substring(1));
+        int col;
+        switch (start.substring(0, 1)) {
+            case "a" -> col = 1;
+            case "b" -> col = 2;
+            case "c" -> col = 3;
+            case "d" -> col = 4;
+            case "e" -> col = 5;
+            case "f" -> col = 6;
+            case "g" -> col = 7;
+            case "h" -> col = 8;
+            default -> {
+                System.out.println(SET_TEXT_COLOR_RED + "Error: follow the format given to make move. See help for more details.");
+                return null;
+            }
+        }
+        return new ChessPosition(row, col);
+    }
+
+    private ChessPosition getPositionBlack(String start) {
         int row = Integer.parseInt(start.substring(1));
         int col;
         switch (start.substring(0, 1)) {

@@ -50,10 +50,15 @@ public class PreLoginREPL implements GameHandler {
         }
         client.setGame(game);
         client.redrawBoard();
+        System.out.println();
+        System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + "\n[PLAYING_GAME] >>> " + SET_TEXT_COLOR_GREEN);
+
     }
 
     @Override
     public void printMessage(String message) {
         System.out.println(SET_TEXT_COLOR_RED + message);
+        System.out.println();
+        System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + "\n[PLAYING_GAME] >>> " + SET_TEXT_COLOR_GREEN);
     }
 }
