@@ -55,8 +55,6 @@ public class WebSocketHandler {
                 JoinObserver joinObserver = new Gson().fromJson(message, JoinObserver.class);
                 this.joinObserver(joinObserver, session);
                 LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
-                String res = new Gson().toJson(loadGame);
-                session.getRemote().sendString(res);
             }
         }
         System.out.printf("Received: %s", command.toString());
@@ -66,7 +64,7 @@ public class WebSocketHandler {
     public void joinPlayer(JoinPlayer joinPlayer, Session session) {
         // JoinRequest joinRequest = new JoinRequest( joinPlayer.getAuthString(), joinPlayer.getPlayerColor().toString(), Integer.toString(joinPlayer.getGameID()));
         try {
-            String username = null;
+            String username;
             // Invalid authToken
             if(joinPlayer.getAuthString() == null) {
                 sendError(session, "Error: Invalid authToken");
@@ -147,8 +145,34 @@ public class WebSocketHandler {
     public void joinObserver(JoinObserver joinObserver, Session session) {
         // JoinRequest joinRequest = new JoinRequest( joinPlayer.getAuthString(), joinPlayer.getPlayerColor().toString(), Integer.toString(joinPlayer.getGameID()));
         try {
+            String username;
+            // Invalid authToken
+            if(joinObserver.getAuthString() == null) {
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
+
             // Getting the username
-            String username = auths.getAuth(joinObserver.getAuthString()).username();
+            try {
+                username = auths.getAuth(joinObserver.getAuthString()).username();
+                if(username == null)
+                    throw new DataAccessException("Invalid authToken");
+            }
+            catch (Exception e){
+                sendError(session, "Error: Invalid authToken");
+                return;
+            }
+
+            // Check if gameID is valid
+            try {
+                GameData game = games.getGame(Integer.toString(joinObserver.getGameID()));
+                if(game == null)
+                    throw new DataAccessException("Error: invalid game");
+            }
+            catch (DataAccessException e){
+                sendError(session, "Error: Invalid game");
+                return;
+            }
 
             // Adding user to game using service
             // GameService service = new GameService(auths, games);
@@ -162,6 +186,9 @@ public class WebSocketHandler {
             // ConnectionManager broadcast = new ConnectionManager();
             connections.add(joinObserver.getGameID(), joinObserver.getAuthString(), session);
             connections.broadcast(joinObserver.getGameID(), json, joinObserver.getAuthString());
+            LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, 1);
+            String res = new Gson().toJson(loadGame);
+            session.getRemote().sendString(res);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
