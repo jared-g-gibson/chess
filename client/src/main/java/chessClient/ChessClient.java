@@ -338,11 +338,7 @@ public class ChessClient {
     private void printWhiteBoard(ChessBoard board) {
         int loopColor = 0;
         for(int x = 8; x >= 1; x--) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
-            for(int y = 1; y <= 8; y++) {
-                setColorsAndPrint(board, x, y, loopColor);
-                loopColor++;
-            }
+            loopColor = printLine(x, loopColor, board);
             System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
             loopColor++;
         }
@@ -404,13 +400,18 @@ public class ChessClient {
     private void printBlackBoard(ChessBoard board) {
         int loopColor = 0;
         for(int x = 1; x <= 8; x++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
-            for(int y = 1; y <= 8; y++) {
-                setColorsAndPrint(board, x, y, loopColor);
-                loopColor++;
-            }
+            loopColor = printLine(x, loopColor, board);
             System.out.println(SET_BG_COLOR_LIGHT_GREY +  SET_TEXT_COLOR_BLACK + "  " + x + "  " +  SET_BG_COLOR_BLACK);
             loopColor++;
         }
+    }
+
+    private int printLine(int x, int loopColor, ChessBoard board) {
+        System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
+        for(int y = 1; y <= 8; y++) {
+            setColorsAndPrint(board, x, y, loopColor);
+            loopColor++;
+        }
+        return loopColor;
     }
 }
