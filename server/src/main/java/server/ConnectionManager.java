@@ -4,8 +4,6 @@ import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
@@ -52,7 +50,7 @@ public class ConnectionManager {
         }
     }
 
-    public void removeSession(javax.websocket.Session session) {
+    public void removeSession(Session session) {
         for(ConcurrentHashMap.Entry<Integer, ConcurrentHashMap<String, Connection>> set : connections.entrySet()) {
             for(ConcurrentHashMap.Entry<String, Connection> mySet : set.getValue().entrySet()) {
                 if(mySet.getValue().session.equals(session))
