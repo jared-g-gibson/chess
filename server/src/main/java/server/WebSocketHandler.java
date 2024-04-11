@@ -131,38 +131,42 @@ public class WebSocketHandler {
             json = new Gson().toJson(notification);
             connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
 
-            if(game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in checkmate. White wins");
-                sendGameOverNotification(notification, game, makeMove, session);
-                return;
-            }
-            if(game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in checkmate. Black wins");
-                sendGameOverNotification(notification, game, makeMove, session);
-                return;
-            }
-            if(game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in check");
-                json = new Gson().toJson(notification);
-                connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
-                session.getRemote().sendString(json);
-                return;
-            }
-            if(game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in check");
-                json = new Gson().toJson(notification);
-                connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
-                session.getRemote().sendString(json);
-                return;
-            }
-            if(game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate. It's a draw.");
-                sendGameOverNotification(notification, game, makeMove, session);
-            }
+            sendNotification(game, makeMove, session);
 
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void sendNotification(ChessGame game, MakeMove makeMove, Session session) throws IOException, DataAccessException {
+        if(game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in checkmate. White wins");
+            sendGameOverNotification(notification, game, makeMove, session);
+            return;
+        }
+        if(game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in checkmate. Black wins");
+            sendGameOverNotification(notification, game, makeMove, session);
+            return;
+        }
+        if(game.isInCheck(ChessGame.TeamColor.BLACK)) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in check");
+            String json = new Gson().toJson(notification);
+            connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+            session.getRemote().sendString(json);
+            return;
+        }
+        if(game.isInCheck(ChessGame.TeamColor.WHITE)) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in check");
+            String json = new Gson().toJson(notification);
+            connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+            session.getRemote().sendString(json);
+            return;
+        }
+        if(game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate. It's a draw.");
+            sendGameOverNotification(notification, game, makeMove, session);
         }
     }
 

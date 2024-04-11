@@ -89,6 +89,7 @@ public class ChessClient {
                     case "register" -> this.registerUser(inputArray);
                     case "login" -> this.loginUser(inputArray);
                     case "quit" -> "quit";
+                    case "help" -> this.help();
                     default -> SET_TEXT_COLOR_RED + "Error. See commands as specified by help";
                 };
             }
@@ -99,6 +100,7 @@ public class ChessClient {
                     case "list" -> this.listGames();
                     case "join", "observe" -> this.joinGame(inputArray);
                     case "quit" -> "quit";
+                    case "help" -> this.help();
                     default -> SET_TEXT_COLOR_RED + "Error. See commands as specified by help";
                 };
             }
