@@ -158,7 +158,7 @@ public class GameplayUI {
 
         // Get start and end positions from strings
         // Example a2a3 -> StartPosition: (1,2) EndPosition: (1, 3)
-        ChessPosition startPosition = getPositionWhite(start);
+        ChessPosition startPosition = getPosition(start);
 
         // Collection of valid moves
         Collection<ChessMove> validMoves = client.getGame().validMoves(startPosition);
