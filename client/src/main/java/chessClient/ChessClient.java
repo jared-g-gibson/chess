@@ -223,7 +223,6 @@ public class ChessClient {
             request = new CreateGameRequest(inputArray[1]);
         }
         else {
-            // System.out.println(SET_TEXT_COLOR_RED + "Error: bad request");
             return SET_TEXT_COLOR_RED + "Error: bad request";
         }
         try {
@@ -255,7 +254,6 @@ public class ChessClient {
 
     public String joinGame(String[] inputArray) {
         JoinGameRequest request;
-        String response;
         Response res;
         switch(inputArray.length) {
             case 2 -> {
@@ -318,7 +316,6 @@ public class ChessClient {
     }
 
     public void redrawBoard() {
-        // String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         ChessBoard board = game.getBoard();
         if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
             System.out.println();
@@ -335,7 +332,6 @@ public class ChessClient {
     }
 
     public void redrawBoard(Collection<ChessMove> validMoves) {
-        // String[] headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
         ChessBoard board = game.getBoard();
         if(this.playerColor == null || this.playerColor == ChessGame.TeamColor.WHITE) {
             printHighlightedWhiteBoard(board, validMoves);
@@ -351,10 +347,8 @@ public class ChessClient {
     private void printHighlightedWhiteBoard(ChessBoard board, Collection<ChessMove> validMoves) {
         System.out.println();
         printHeaders();
-        // System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
         int loopColor = 0;
         for(int x = 8; x >= 1; x--) {
-            // loopColor = printLine(x, loopColor, board);
             System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
             for(int y = 1; y <= 8; y++) {
                 setColorsAndPrintHighlights(board, x, y, loopColor, validMoves);
@@ -369,7 +363,6 @@ public class ChessClient {
     private void printHighlightedBlackBoard(ChessBoard board, Collection<ChessMove> validMoves) {
         int loopColor = 0;
         for(int x = 1; x <= 8; x++) {
-            // loopColor = printLine(x, loopColor, board);
             System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
             for(int y = 8; y >= 1; y--) {
                 setColorsAndPrintHighlights(board, x, y, loopColor, validMoves);
@@ -480,7 +473,6 @@ public class ChessClient {
     private void printBlackBoard(ChessBoard board) {
         int loopColor = 0;
         for(int x = 1; x <= 8; x++) {
-            // loopColor = printLine(x, loopColor, board);
             System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "  " + x + "  " + SET_BG_COLOR_WHITE);
             for(int y = 8; y >= 1; y--) {
                 setColorsAndPrint(board, x, y, loopColor);
