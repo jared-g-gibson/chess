@@ -143,12 +143,16 @@ public class WebSocketHandler {
             }
             if(game.isInCheck(ChessGame.TeamColor.BLACK)) {
                 notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).blackUsername() + " is in check");
-                sendGameOverNotification(notification, game, makeMove, session);
+                json = new Gson().toJson(notification);
+                connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+                session.getRemote().sendString(json);
                 return;
             }
             if(game.isInCheck(ChessGame.TeamColor.WHITE)) {
                 notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, games.getGame(Integer.toString(makeMove.getGameID())).whiteUsername() + " is in check");
-                sendGameOverNotification(notification, game, makeMove, session);
+                json = new Gson().toJson(notification);
+                connections.broadcast(makeMove.getGameID(), json, makeMove.getAuthString());
+                session.getRemote().sendString(json);
                 return;
             }
             if(game.isInStalemate(ChessGame.TeamColor.BLACK)) {
